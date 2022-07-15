@@ -1,6 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import RoleIndex from '../model/roleIndex.js'
-import RoleDetail from '../model/RoleDetail.js'
+import RoleDetail from '../model/roleDetail.js'
 import fs from 'node:fs'
 import gsCfg from '../model/gsCfg.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
