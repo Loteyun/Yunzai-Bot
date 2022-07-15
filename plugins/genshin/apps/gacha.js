@@ -1,6 +1,6 @@
 /** 导入plugin */
 import plugin from '../../../lib/plugins/plugin.js'
-import GachaData from '../model/GachaData.js'
+import GachaData from '../model/gachaData.js'
 import fs from 'node:fs'
 import lodash from 'lodash'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
