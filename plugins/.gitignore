@@ -1,0 +1,12 @@
+*
+!.gitignore
+
+!genshin
+!genshin/**
+
+!system
+!system/**
+
+!example
+example/**
+!example/example*.js

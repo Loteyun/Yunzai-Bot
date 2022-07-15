@@ -1,0 +1,10 @@
+# 日志等级:trace,debug,info,warn,error,fatal,mark,off
+log_level: info
+# 群聊和频道中过滤自己的消息
+ignore_self: true
+# 被风控时是否尝试用分片发送
+resend: false
+# ffmpeg
+ffmpeg_path:
+ffprobe_path:
+  
