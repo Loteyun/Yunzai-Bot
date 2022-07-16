@@ -5,7 +5,7 @@ export class newcomer extends plugin {
   constructor () {
     super({
       name: '欢迎新人',
-      dsc: '简单开发示例',
+      dsc: '新人入群欢迎',
       /** https://oicqjs.github.io/oicq/#events */
       event: 'notice.group.increase',
       priority: 5000
@@ -16,7 +16,7 @@ export class newcomer extends plugin {
   async accept () {
     /** 定义入群欢迎内容 */
     let msg = '欢迎新人！'
-    /** 冷却cd 10s */
+    /** 冷却cd 30s */
     let cd = 30
 
     if (this.e.user_id == cfg.qq) return

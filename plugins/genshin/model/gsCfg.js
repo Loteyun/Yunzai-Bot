@@ -159,7 +159,7 @@ class GsCfg {
     }
 
     let roelId = this.nameID.get(keyword)
-    return roelId || ''
+    return roelId || false
   }
 
   /** 原神角色武器名称缩小 */

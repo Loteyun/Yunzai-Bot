@@ -162,7 +162,7 @@ export default class User extends base {
     let redisUid = await redis.get(this.uidKey)
 
     if (lodash.isEmpty(ck)) {
-      this.e.reply(`当前绑定uid：${redisUid}`)
+      await this.e.reply(`当前绑定uid：${redisUid}`)
       return
     }
 
@@ -179,7 +179,7 @@ export default class User extends base {
 
     msg = '当前绑定cookie Uid列表\n通过【#uid+序号】来切换uid\n' + msg.join('\n')
 
-    this.e.reply(msg)
+    await this.e.reply(msg)
   }
 
   /** 切换uid */

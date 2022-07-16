@@ -57,6 +57,7 @@ export class user extends plugin {
     if (!fs.existsSync(file)) {
       fs.mkdirSync(file)
     }
+    /** 加载旧的绑定ck json */
     this.loadOldData()
   }
 
@@ -142,6 +143,7 @@ export class user extends plugin {
     }
   }
 
+  /** 加载旧的绑定ck json */
   loadOldData () {
     this.User.loadOldData()
   }

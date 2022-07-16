@@ -7,7 +7,12 @@ export class gachaLog extends plugin {
       dsc: '抽卡记录数据统计',
       event: 'message',
       priority: 300,
-      rule: []
+      rule: [
+        {
+          reg: '(.*)authkey=(.*)',
+          fnc: 'logUrl'
+        }
+      ]
     })
   }
 
@@ -17,5 +22,13 @@ export class gachaLog extends plugin {
 
   accept () {
 
+  }
+
+  /** 抽卡记录链接 */
+  async logUrl () {
+    if (!this.e.isPrivate) {
+      this.e.reply('请私聊发送链接', false, { at: true })
+      return true
+    }
   }
 }

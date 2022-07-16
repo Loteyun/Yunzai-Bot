@@ -25,6 +25,7 @@ export class role extends plugin {
     })
   }
 
+  /** 初始化配置文件 */
   async init () {
     let file = './data/MysCookie'
     if (!fs.existsSync(file)) {
@@ -42,16 +43,21 @@ export class role extends plugin {
     }
   }
 
+  /** 接受到消息都会先执行一次 */
   accept () {
     if (!this.e.msg) return
     if (!/^#(.*)$/.test(this.e.msg)) return
 
     let msg = this.e.msg.replace(/#|老婆|老公|[1|2|5][0-9]{8}/g, '').trim()
 
+    /** 判断是否命中别名 */
     let roleId = gsCfg.roleNameToID(msg)
     if (roleId) {
+      /** 设置命令 */
       this.e.msg = '#角色详情'
+      /** 角色id */
       this.e.roleId = roleId
+      /** 角色名称 */
       this.e.roleName = msg
     }
   }

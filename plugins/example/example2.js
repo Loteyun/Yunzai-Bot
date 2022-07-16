@@ -4,7 +4,7 @@ export class example2 extends plugin {
   constructor () {
     super({
       name: '复读',
-      dsc: '简单开发示例',
+      dsc: '复读用户发送的内容，然后撤回',
       /** https://oicqjs.github.io/oicq/#events */
       event: 'message',
       priority: 5000,
@@ -21,7 +21,7 @@ export class example2 extends plugin {
 
   /** 复读 */
   async repeat () {
-    /** 设置上下文 */
+    /** 设置上下文，后续接收到内容会执行doRep方法 */
     this.setContext('doRep')
     /** 回复 */
     await this.reply('请发送要复读的内容', false, { at: true })
