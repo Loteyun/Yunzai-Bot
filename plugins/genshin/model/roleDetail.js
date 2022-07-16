@@ -26,11 +26,14 @@ export default class RoleDetail extends base {
     let param = { character: '' }
     if (this.isBing) {
       param.detail = { avatar_id: this.e.roleId }
+      this.e.reply2 = this.e.reply
       this.e.reply = () => {}
     }
 
     let res = await MysInfo.get(this.e, param)
     if (!res || res[0].retcode !== 0) return false
+
+    if (this.isBing) this.e.reply = this.e.reply2
 
     /** 获取技能等级 */
     let avatar = await this.getAvatar(res[0].data)
@@ -47,6 +50,7 @@ export default class RoleDetail extends base {
       quality: 80,
       ...this.screenData,
       uid: this.e.uid,
+      saveId: this.e.uid,
       ...avatar,
       skill
     }

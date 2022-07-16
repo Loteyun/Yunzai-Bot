@@ -43,7 +43,7 @@ export default class MysSign extends base {
       await new User(this.e).del(ck.uid)
       return {
         retcode: -100,
-        msg: `签到失败，uid:${ck.uid},绑定cookie已失效`
+        msg: `签到失败，uid:${ck.uid}，绑定cookie已失效`
       }
     }
 
@@ -65,7 +65,7 @@ export default class MysSign extends base {
 
       return {
         retcode: 0,
-        msg: `uid:${ck.uid}\n米游社签到成功\n第${totalSignDay}天奖励：${reward}`
+        msg: `uid:${ck.uid}，签到成功\n第${totalSignDay}天奖励：${reward}`
       }
     }
 
@@ -108,7 +108,7 @@ export default class MysSign extends base {
   }
 
   async bbsSign () {
-    let key = `${this.prefix}signed`
+    let key = `${this.prefix}signed:${this.mysApi.uid}`
 
     let signed = await redis.get(key)
     if (signed) return true
@@ -116,7 +116,7 @@ export default class MysSign extends base {
     let sign = await this.mysApi.getData('bbs_sign')
 
     /** 签到成功 */
-    if (sign.retcode === 0) {
+    if (sign.retcode === 0 || sign.retcode === -5003) {
       redis.setEx(key, moment().endOf('day').format('X'), '1')
       return true
     }

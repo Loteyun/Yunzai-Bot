@@ -111,6 +111,7 @@ export default class Note extends base {
 
     return {
       uid: this.e.uid,
+      saveId: this.e.uid,
       resinMaxTime,
       remainedTime,
       coinTime,

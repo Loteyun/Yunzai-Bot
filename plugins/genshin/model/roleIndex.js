@@ -182,6 +182,7 @@ export default class RoleIndex extends base {
 
     return {
       uid: this.e.uid,
+      saveId: this.e.uid,
       activeDay: this.dayCount(stats.active_day_number),
       line,
       avatars,
