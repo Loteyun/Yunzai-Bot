@@ -157,7 +157,7 @@ class GsCfg {
         }
       }
     }
-
+    if (!isNaN(keyword)) keyword = Number(keyword)
     let roelId = this.nameID.get(keyword)
     return roelId || false
   }

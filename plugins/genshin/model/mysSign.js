@@ -31,8 +31,8 @@ export default class MysSign extends base {
     }
   }
 
-  async doSign (ck) {
-    this.mysApi = new MysApi(ck.uid, ck.ck, { log: false })
+  async doSign (ck, isLog = true) {
+    this.mysApi = new MysApi(ck.uid, ck.ck, { log: isLog })
 
     /** 判断是否已经签到 */
     let signInfo = await this.mysApi.getData('bbs_sign_info')
@@ -133,7 +133,7 @@ export default class MysSign extends base {
       let ck = cks[uid]
       this.e = { user_id: ck.qq }
 
-      let res = await this.doSign(ck)
+      let res = await this.doSign(ck, false)
 
       if (res.retcode == 0) {
         logger.mark(`签到成功[qq:${ck.qq}][uid:${uid}]`)
