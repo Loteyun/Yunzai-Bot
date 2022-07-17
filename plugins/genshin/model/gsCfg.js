@@ -162,7 +162,11 @@ class GsCfg {
     return roelId || false
   }
 
-  /** 原神角色武器名称缩小 */
+  /**
+   * 原神角色武器长名称缩写
+   * @param name 名称
+   * @param isWeapon 是否武器
+   */
   shortName (name, isWeapon = false) {
     let other = {}
     if (isWeapon) {

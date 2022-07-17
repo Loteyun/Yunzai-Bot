@@ -59,6 +59,7 @@ export class role extends plugin {
       this.e.roleId = roleId
       /** 角色名称 */
       this.e.roleName = msg
+      return true
     }
   }
 

@@ -73,11 +73,13 @@ export class user extends plugin {
     if (this.e.msg.includes('ltoken') && this.e.msg.includes('ltuid')) {
       this.e.ck = this.e.msg
       this.e.msg = '#绑定cookie'
+      return true
     }
 
     if (this.e.msg == '#绑定uid') {
       this.setContext('saveUid')
       this.reply('请发送绑定的uid', false, { at: true })
+      return true
     }
   }
 
