@@ -30,6 +30,11 @@ export class user extends plugin {
           fnc: 'noLogin'
         },
         {
+          reg: '#?我的(ck|cookie)',
+          event: 'message',
+          fnc: 'myCk'
+        },
+        {
           reg: '#?删除(ck|cookie)',
           fnc: 'delCk'
         },
@@ -141,6 +146,11 @@ export class user extends plugin {
     } else {
       await this.User.showUid()
     }
+  }
+
+  /** 我的ck */
+  async myCk () {
+    await this.User.myCk()
   }
 
   /** 加载旧的绑定ck json */

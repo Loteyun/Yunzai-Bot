@@ -16,3 +16,4 @@
 |#删除cookie|删除绑定的cookie|
 |#绑定uid|绑定游戏的uid|
 |#uid|显示已绑定cookie的uid|
+|#我的ck|当前绑定的主cookie|

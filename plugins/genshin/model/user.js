@@ -253,4 +253,18 @@ export default class User extends base {
 
     fs.unlinkSync(file)
   }
+
+  async myCk () {
+    let ck = gsCfg.getBingCkSingle(this.e.user_id)
+    if (lodash.isEmpty(ck)) {
+      this.e.reply('请先绑定cookie')
+    }
+
+    ck = lodash.find(ck, (v) => { return v.isMain })
+
+    if (!lodash.isEmpty(ck)) {
+      await this.e.reply(`当前绑定cookie\nUid：${ck.uid}`)
+      await this.e.reply(ck.ck)
+    }
+  }
 }
