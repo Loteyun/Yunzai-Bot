@@ -4,7 +4,7 @@ import RoleDetail from '../model/roleDetail.js'
 import fs from 'node:fs'
 import gsCfg from '../model/gsCfg.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
-
+import Abyss from '../model/abyss.js'
 export class role extends plugin {
   constructor () {
     super({
@@ -18,8 +18,12 @@ export class role extends plugin {
           fnc: 'roleIndex'
         },
         {
-          reg: '^#角色详情',
+          reg: '^#角色详情[0-9]*$',
           fnc: 'roleDetail'
+        },
+        {
+          reg: '^#[上期|往期|本期]*(深渊|深境|深境螺旋)[上期|往期|本期]*[ |0-9]*$',
+          fnc: 'abyss'
         }
       ]
     })
@@ -49,12 +53,13 @@ export class role extends plugin {
     if (!/^#(.*)$/.test(this.e.msg)) return
 
     let msg = this.e.msg.replace(/#|老婆|老公|[1|2|5][0-9]{8}/g, '').trim()
-
+    let uid = gsCfg.getMsgUid(this.e.msg)
     /** 判断是否命中别名 */
     let roleId = gsCfg.roleNameToID(msg)
     if (roleId) {
       /** 设置命令 */
       this.e.msg = '#角色详情'
+      if (uid) this.e.msg += uid
       /** 角色id */
       this.e.roleId = roleId
       /** 角色名称 */
@@ -78,6 +83,15 @@ export class role extends plugin {
     if (!data) return
 
     let img = await puppeteer.screenshot('roleDetail', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 刻晴 */
+  async abyss () {
+    let data = await new Abyss(this.e).getAbyss()
+    if (!data) return
+
+    let img = await puppeteer.screenshot('abyss', data)
     if (img) await this.reply(img)
   }
 }

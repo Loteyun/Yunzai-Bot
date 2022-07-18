@@ -191,6 +191,12 @@ class GsCfg {
     }
     return def
   }
+
+  getMsgUid (msg) {
+    let ret = /[1|2|5][0-9]{8}/g.exec(msg)
+    if (!ret) return false
+    return ret[0]
+  }
 }
 
 export default new GsCfg()
