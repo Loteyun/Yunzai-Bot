@@ -77,12 +77,14 @@ export default class ExportLog extends base {
 
     logger.mark(`${this.e.logFnc} 导出成功${this.uid}.xlsx`)
 
+    this.e.reply(`文件${this.uid}.xlsx上传中，请耐心等待...`)
+
     res = await this.e.friend.sendFile(saveFile).catch((err) => {
       this.e.reply(`发送文件${this.uid}.xlsx失败，请稍后再试`)
       logger.error(`${this.e.logFnc} 发送文件失败 ${JSON.stringify(err)}`)
     })
 
-    if (res) this.e.reply(`导出成功：${this.uid}.xlsx\n请接收文件`)
+    if (res) this.e.reply('上传成功，请接收文件')
   }
 
   async getUid () {

@@ -49,6 +49,7 @@ export default class GachaLog extends base {
 
     this.isLogUrl = true
 
+    this.all = []
     let data = await this.getLogData()
 
     this.e.msg = `[uid:${this.uid}]`
@@ -210,8 +211,8 @@ export default class GachaLog extends base {
 
     let logJson = this.readJson()
     /** 第一次获取增加提示 */
-    if (lodash.isEmpty(logJson.list)) {
-      await this.e.reply(`开始获取${this.typeName}记录，请稍候...`)
+    if (lodash.isEmpty(logJson.list) && this.type == 301) {
+      await this.e.reply(`开始获取${this.typeName}记录，首次获取数据较多，请耐心等待...`)
     }
 
     let logRes = await this.getAllLog(logJson.ids, authkey)
@@ -247,14 +248,14 @@ export default class GachaLog extends base {
     }
 
     if (!res?.data?.list || res.data.list.length <= 0) {
-      logger.mark(`${this.e.logFnc} 获取${this.typeName}记录完成，共${Number(page) - 1}页`)
+      logger.mark(`${this.e.logFnc}[uid:${this.uid}] 获取${this.typeName}记录完成，共${Number(page) - 1}页`)
       return { hasErr: false, list: [] }
     }
 
     let list = []
     for (let val of res.data.list) {
       if (ids.includes(val.id)) {
-        logger.mark(`${this.e.logFnc} 获取${this.typeName}记录完成，暂无新记录`)
+        logger.mark(`${this.e.logFnc}[uid:${this.uid}] 获取${this.typeName}记录完成，暂无新记录`)
         return { hasErr: false, list }
       } else {
         list.push(val)
