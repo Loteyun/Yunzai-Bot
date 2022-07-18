@@ -1,9 +1,11 @@
 import base from './base.js'
-import fs from 'node:fs'
 import cfg from '../../../lib/config/config.js'
+import common from '../../../lib/common/common.js'
+import fs from 'node:fs'
 import moment from 'moment'
 import xlsx from 'node-xlsx'
 import GachaLog from './gachaLog.js'
+import lodash from 'lodash'
 
 export default class ExportLog extends base {
   constructor (e) {
@@ -17,10 +19,16 @@ export default class ExportLog extends base {
     this.path = `./data/gachaJson/${this.e.user_id}/`
 
     this.pool = [
-      { type: 301, typeName: '角色' },
-      { type: 302, typeName: '武器' },
+      { type: 301, typeName: '角色活动' },
+      { type: 302, typeName: '武器活动' },
       { type: 200, typeName: '常驻' }
     ]
+
+    this.typeName = {
+      301: '角色',
+      302: '武器',
+      200: '常驻'
+    }
   }
 
   async exportJson () {
@@ -165,5 +173,145 @@ export default class ExportLog extends base {
     }
 
     return { name: '原始数据', data: list, options: sheetOptions }
+  }
+
+  /** xlsx导入抽卡记录 */
+  async logXlsx () {
+    let uid = /[1-9][0-9]{8}/g.exec(this.e.file.name)[0]
+    let textPath = `${this.path}${this.e.file.name}`
+    /** 获取文件下载链接 */
+    let fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
+
+    let ret = await common.downFile(fileUrl, textPath)
+    if (!ret) {
+      this.e.reply('下载xlsx文件错误')
+      return false
+    }
+
+    let list = xlsx.parse(textPath)
+    list = lodash.keyBy(list, 'name')
+
+    if (!list['原始数据']) {
+      this.e.reply('xlsx文件内容错误：非统一祈愿记录标准')
+      return false
+    }
+
+    /** 处理xlsx数据 */
+    let data = this.dealXlsx(list['原始数据'].data)
+
+    /** 保存json */
+    let msg = []
+    for (let type in data) {
+      let gachLog = new GachaLog(this.e)
+      gachLog.uid = uid
+      gachLog.type = type
+      gachLog.writeJson(data[type])
+
+      msg.push(`${this.typeName[type]}记录：${data[type].length}条`)
+    }
+
+    /** 删除文件 */
+    fs.unlink(textPath, () => {})
+
+    await this.e.reply(`${this.e.file.name}，导入成功\n${msg.join('\n')}`)
+  }
+
+  dealXlsx (list) {
+    /** 必要字段 */
+    let reqField = ['uigf_gacha_type', 'gacha_type', 'id', 'item_type', 'name']
+    /** 不是必要字段 */
+    let noReqField = ['uid', 'count', 'time', 'item_id', 'lang', 'rank_type']
+
+    let field = {}
+    for (let i in list[0]) {
+      field[list[0][i]] = i
+    }
+
+    /** 判断字段 */
+    for (let v of reqField) {
+      if (!field[v]) {
+        this.e.reply(`xlsx文件内容错误：缺少必要字段${v}`)
+        return
+      }
+    }
+
+    let data = {}
+    for (let v of list) {
+      if (v[field.name] == 'name') continue
+      if (!data[v[field.uigf_gacha_type]]) data[v[field.uigf_gacha_type]] = []
+
+      let tmp = {}
+      /** 加入必要字段 */
+      for (let re of reqField) {
+        tmp[re] = v[field[re]]
+      }
+
+      /** 加入非必要字段 */
+      for (let noRe of noReqField) {
+        if (field[noRe]) {
+          tmp[noRe] = v[field[noRe]]
+        } else {
+          tmp[noRe] = ''
+        }
+      }
+
+      data[v[field.uigf_gacha_type]].push(tmp)
+    }
+
+    return data
+  }
+
+  /** json导入抽卡记录 */
+  async logJson () {
+    let uid = /[1-9][0-9]{8}/g.exec(this.e.file.name)[0]
+    let textPath = `${this.path}${this.e.file.name}`
+    /** 获取文件下载链接 */
+    let fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
+
+    let ret = await common.downFile(fileUrl, textPath)
+    if (!ret) {
+      this.e.reply('下载json文件错误')
+      return false
+    }
+    let json = {}
+    try {
+      json = JSON.parse(fs.readFileSync(textPath, 'utf8'))
+    } catch (error) {
+      this.e.reply(`${this.e.file.name},json格式错误`)
+      return false
+    }
+
+    if (lodash.isEmpty(json) || !json.list) {
+      this.e.reply('json文件内容错误：非统一祈愿记录标准')
+      return false
+    }
+
+    let data = this.dealJson(json.list)
+
+    /** 保存json */
+    let msg = []
+    for (let type in data) {
+      let gachLog = new GachaLog(this.e)
+      gachLog.uid = uid
+      gachLog.type = type
+      gachLog.writeJson(data[type])
+
+      msg.push(`${this.typeName[type]}记录：${data[type].length}条`)
+    }
+
+    /** 删除文件 */
+    fs.unlink(textPath, () => {})
+
+    await this.e.reply(`${this.e.file.name}，导入成功\n${msg.join('\n')}`)
+  }
+
+  dealJson (list) {
+    let data = {}
+    for (let v of list) {
+      if (!data[v.uigf_gacha_type]) data[v.uigf_gacha_type] = []
+
+      data[v.uigf_gacha_type].push(v)
+    }
+    return data
   }
 }

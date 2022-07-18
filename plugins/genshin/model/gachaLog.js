@@ -4,8 +4,6 @@ import lodash from 'lodash'
 import fs from 'node:fs'
 import common from '../../../lib/common/common.js'
 import gsCfg from './gsCfg.js'
-import { pipeline } from 'stream'
-import { promisify } from 'util'
 
 export default class GachaLog extends base {
   constructor (e) {
@@ -97,10 +95,12 @@ export default class GachaLog extends base {
 
     // 获取文件下载链接
     let fileUrl = await this.e.friend.getFileUrl(this.e.file.fid)
-    // 下载output_log.txt文件
-    const response = await fetch(fileUrl)
-    const streamPipeline = promisify(pipeline)
-    await streamPipeline(response.body, fs.createWriteStream(textPath))
+
+    let ret = await common.downFile(fileUrl, textPath)
+    if (!ret) {
+      this.e.reply('下载日志文件错误')
+      return false
+    }
 
     // 读取txt文件
     let txt = fs.readFileSync(textPath, 'utf-8')

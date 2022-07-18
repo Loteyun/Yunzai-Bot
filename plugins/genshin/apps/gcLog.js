@@ -21,6 +21,14 @@ export class gcLog extends plugin {
           fnc: 'logFile'
         },
         {
+          reg: '#xlsx文件导入记录',
+          fnc: 'logXlsx'
+        },
+        {
+          reg: '#json文件导入记录',
+          fnc: 'logJson'
+        },
+        {
           reg: '^#*(抽卡|抽奖|角色|武器|常驻|up)池*(记录|祈愿|分析)$',
           fnc: 'getLog'
         },
@@ -41,9 +49,20 @@ export class gcLog extends plugin {
   }
 
   accept () {
-    if (this.e.file && this.e.file.name.includes('txt')) {
-      this.e.msg = '#日志文件导入记录'
-      return true
+    if (this.e.file) {
+      let name = this.e.file?.name
+      if (name.includes('txt') && name.includes('output')) {
+        this.e.msg = '#日志文件导入记录'
+        return true
+      }
+      if (/^[1-9][0-9]{8}(.*).xlsx$/ig.test(name)) {
+        this.e.msg = '#xlsx文件导入记录'
+        return true
+      }
+      if (/^[1-9][0-9]{8}(.*).json/ig.test(name)) {
+        this.e.msg = '#json文件导入记录'
+        return true
+      }
     }
   }
 
@@ -61,6 +80,7 @@ export class gcLog extends plugin {
     if (img) await this.reply(img)
   }
 
+  /** 发送output_log.txt日志文件 */
   async logFile () {
     if (!this.e.isPrivate) {
       await this.e.reply('请私聊发送日志文件', false, { at: true })
@@ -86,6 +106,7 @@ export class gcLog extends plugin {
     if (img) await this.reply(img)
   }
 
+  /** 导出记录 */
   async exportLog () {
     let exportLog = new ExportLog(this.e)
 
@@ -94,5 +115,31 @@ export class gcLog extends plugin {
     } else {
       return await exportLog.exportXlsx()
     }
+  }
+
+  async logXlsx () {
+    if (!this.e.isPrivate) {
+      await this.e.reply('请私聊发送日志文件', false, { at: true })
+      return true
+    }
+
+    if (!this.e.file || !/^[1-9][0-9]{8}(.*).xlsx$/ig.test(this.e.file?.name)) {
+      await this.e.reply('请发送xlsx文件')
+    }
+
+    await new ExportLog(this.e).logXlsx()
+  }
+
+  async logJson () {
+    if (!this.e.isPrivate) {
+      await this.e.reply('请私聊发送Json文件', false, { at: true })
+      return true
+    }
+
+    if (!this.e.file || !/^[1-9][0-9]{8}(.*).json/ig.test(this.e.file?.name)) {
+      await this.e.reply('请发送Json文件')
+    }
+
+    await new ExportLog(this.e).logJson()
   }
 }
