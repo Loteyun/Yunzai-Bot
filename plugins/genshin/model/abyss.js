@@ -42,7 +42,7 @@ export default class Abyss extends base {
     let { data } = res
 
     let startTime = moment.unix(data.start_time)
-    let time = startTime.month()
+    let time = Number(startTime.month()) + 1
     if (startTime.date() >= 15) {
       time = time + '月下'
     } else {
