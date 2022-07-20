@@ -62,6 +62,9 @@ export default class ExportLog extends base {
     await this.e.friend.sendFile(saveFile).catch((err) => {
       logger.error(`${this.e.logFnc} 发送文件失败 ${JSON.stringify(err)}`)
     })
+
+    /** 删除文件 */
+    fs.unlink(saveFile, () => {})
   }
 
   async exportXlsx () {
@@ -93,6 +96,9 @@ export default class ExportLog extends base {
     })
 
     if (res) this.e.reply('上传成功，请接收文件')
+
+    /** 删除文件 */
+    fs.unlink(saveFile, () => {})
   }
 
   async getUid () {
@@ -198,10 +204,12 @@ export default class ExportLog extends base {
 
     /** 处理xlsx数据 */
     let data = this.dealXlsx(list['原始数据'].data)
+    if (!data) return false
 
     /** 保存json */
     let msg = []
     for (let type in data) {
+      if (!this.typeName[type]) continue
       let gachLog = new GachaLog(this.e)
       gachLog.uid = uid
       gachLog.type = type
@@ -218,9 +226,9 @@ export default class ExportLog extends base {
 
   dealXlsx (list) {
     /** 必要字段 */
-    let reqField = ['uigf_gacha_type', 'gacha_type', 'id', 'item_type', 'name']
+    let reqField = ['uigf_gacha_type', 'gacha_type', 'id', 'item_type', 'name', 'time']
     /** 不是必要字段 */
-    let noReqField = ['uid', 'count', 'time', 'item_id', 'lang', 'rank_type']
+    let noReqField = ['uid', 'count', 'item_id', 'lang', 'rank_type']
 
     let field = {}
     for (let i in list[0]) {
@@ -255,7 +263,13 @@ export default class ExportLog extends base {
         }
       }
 
+      tmp.Unix = moment(v.time).format('X')
+
       data[v[field.uigf_gacha_type]].push(tmp)
+    }
+
+    for (let i in data) {
+      data[i] = lodash.orderBy(data[i], ['Unix', 'desc'])
     }
 
     return data
@@ -287,6 +301,7 @@ export default class ExportLog extends base {
     }
 
     let data = this.dealJson(json.list)
+    if (!data) return false
 
     /** 保存json */
     let msg = []
@@ -307,11 +322,29 @@ export default class ExportLog extends base {
 
   dealJson (list) {
     let data = {}
+
+    /** 必要字段 */
+    let reqField = ['gacha_type', 'id', 'item_type', 'name', 'time']
+
+    for (let v of reqField) {
+      if (!list[0][v]) {
+        this.e.reply(`json文件内容错误：缺少必要字段${v}`)
+        return false
+      }
+    }
+
     for (let v of list) {
       if (!data[v.uigf_gacha_type]) data[v.uigf_gacha_type] = []
 
+      v.Unix = moment(v.time).format('X')
+
       data[v.uigf_gacha_type].push(v)
     }
+
+    for (let i in data) {
+      data[i] = lodash.orderBy(data[i], ['Unix', 'desc'])
+    }
+
     return data
   }
 }
