@@ -282,6 +282,8 @@ export default class MysInfo {
       return
     }
 
+    if (!num) num = 0
+
     this.ckInfo = ck
     this.ckInfo.type = 'bing'
 
@@ -300,7 +302,7 @@ export default class MysInfo {
     /** 插入单个查询次数 */
     redis.setEx(`${MysInfo.key.ckNum}${ck.ltuid}`, this.getEnd(), String(count.length))
 
-    logger.mark(`[米游社查询][uid：${this.uid}]${logger.blue(`[使用用户ck：${ck.ltuid}]`)}`)
+    logger.mark(`[米游社查询][uid：${this.uid}]${logger.blue(`[使用用户ck：${ck.ltuid}]`)}[次数:${++num}次]`)
 
     return ck.ck
   }

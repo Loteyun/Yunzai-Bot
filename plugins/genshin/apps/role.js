@@ -52,18 +52,15 @@ export class role extends plugin {
     if (!this.e.msg) return
     if (!/^#(.*)$/.test(this.e.msg)) return
 
-    let msg = this.e.msg.replace(/#|老婆|老公|[1|2|5][0-9]{8}/g, '').trim()
-    let uid = gsCfg.getMsgUid(this.e.msg)
-    /** 判断是否命中别名 */
-    let roleId = gsCfg.roleNameToID(msg)
-    if (roleId) {
+    let role = gsCfg.getRole(this.e.msg)
+    if (role) {
       /** 设置命令 */
       this.e.msg = '#角色详情'
-      if (uid) this.e.msg += uid
+      if (role.uid) this.e.msg += role.uid
       /** 角色id */
-      this.e.roleId = roleId
+      this.e.roleId = role.roleId
       /** 角色名称 */
-      this.e.roleName = msg
+      this.e.roleName = role.alias
       return true
     }
   }
