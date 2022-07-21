@@ -11,7 +11,7 @@ export class example2 extends plugin {
       rule: [
         {
           /** 命令正则匹配 */
-          reg: '#复读',
+          reg: '^#复读$',
           /** 执行方法 */
           fnc: 'repeat'
         }
