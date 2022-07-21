@@ -125,6 +125,9 @@ export default class ExportLog extends base {
         } else {
           v.uigf_gacha_type = v.gacha_type
         }
+        if (!v.id) {
+          v.id = moment(v.time).format('x')
+        }
         res.list.push(v)
       }
     }
@@ -305,6 +308,7 @@ export default class ExportLog extends base {
     /** 保存json */
     let msg = []
     for (let type in data) {
+      if (!this.typeName[type]) continue
       let gachLog = new GachaLog(this.e)
       gachLog.uid = uid
       gachLog.type = type
