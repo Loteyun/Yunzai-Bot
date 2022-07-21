@@ -42,7 +42,7 @@ export default class ExportLog extends base {
       info: {
         uid: this.uid,
         lang: list[0].lang,
-        export_time: moment().format('YYYY--MM-DD HH:mm:ss'),
+        export_time: moment().format('YYYY-MM-DD HH:mm:ss'),
         export_timestamp: moment().format('X'),
         export_app: 'Yunzai-Bot',
         export_app_version: cfg.package.version,
@@ -243,6 +243,11 @@ export default class ExportLog extends base {
       }
     }
 
+    /** 倒序 */
+    if (list[1][field.id] < list[list.length - 1][field.id]) {
+      list = list.reverse()
+    }
+
     let data = {}
     for (let v of list) {
       if (v[field.name] == 'name') continue
@@ -263,13 +268,7 @@ export default class ExportLog extends base {
         }
       }
 
-      tmp.Unix = moment(v.time).format('X')
-
       data[v[field.uigf_gacha_type]].push(tmp)
-    }
-
-    for (let i in data) {
-      data[i] = lodash.orderBy(data[i], ['Unix', 'desc'])
     }
 
     return data
@@ -333,16 +332,14 @@ export default class ExportLog extends base {
       }
     }
 
-    for (let v of list) {
-      if (!data[v.uigf_gacha_type]) data[v.uigf_gacha_type] = []
-
-      v.Unix = moment(v.time).format('X')
-
-      data[v.uigf_gacha_type].push(v)
+    /** 倒序 */
+    if (list[0].id < list[list.length - 1].id) {
+      list = list.reverse()
     }
 
-    for (let i in data) {
-      data[i] = lodash.orderBy(data[i], ['Unix', 'desc'])
+    for (let v of list) {
+      if (!data[v.uigf_gacha_type]) data[v.uigf_gacha_type] = []
+      data[v.uigf_gacha_type].push(v)
     }
 
     return data

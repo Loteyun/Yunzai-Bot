@@ -321,7 +321,10 @@ export default class GachaLog extends base {
     /** 判断uid */
     await this.getUid()
 
-    if (!this.uid) return false
+    if (!this.uid) {
+      await this.e.reply('当前绑定uid暂无抽卡记录')
+      return false
+    }
 
     /** 更新记录 */
     if (!this.isLogUrl) await this.updateLog()
@@ -399,6 +402,8 @@ export default class GachaLog extends base {
     uidArr = uidArr.sort(function (a, b) {
       return b.mtimeMs - a.mtimeMs
     })
+
+    this.uid = uidArr[0].uid
 
     return uidArr[0].uid
   }
