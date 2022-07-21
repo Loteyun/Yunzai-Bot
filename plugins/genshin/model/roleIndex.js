@@ -210,7 +210,7 @@ export default class RoleIndex extends base {
     }
 
     let startTime = moment(resAbyss.startTime)
-    let time = startTime.month()
+    let time = Number(startTime.month()) + 1
     if (startTime.day() >= 15) {
       time = time + '月下'
     } else {
