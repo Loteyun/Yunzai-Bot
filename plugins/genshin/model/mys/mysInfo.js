@@ -26,6 +26,8 @@ export default class MysInfo {
     qqUid: `${MysInfo.keyPre}qq-uid:`
   }
 
+  static tips = '请先#绑定cookie\n发送【体力帮助】查看配置教程'
+
   constructor (e) {
     if (e) {
       this.e = e
@@ -133,7 +135,7 @@ export default class MysInfo {
     }
 
     if (!e.user_id || !bingCkQQ[e.user_id] || !bingCkQQ[e.user_id].uid) {
-      e.reply('请先#绑定cookie', false, { at })
+      e.reply(MysInfo.tips, false, { at })
       return false
     }
 
@@ -309,7 +311,7 @@ export default class MysInfo {
 
   async getPublicCK () {
     if (lodash.isEmpty(pubCk)) {
-      logger.info('请先配置公共查询ck')
+      logger.mark('请先配置公共查询ck')
       return false
     }
 
@@ -317,14 +319,14 @@ export default class MysInfo {
     let list = await redis.zRangeByScore(MysInfo.key.count, 0, 27, true)
 
     if (lodash.isEmpty(list)) {
-      logger.info('公共查询ck已用完')
+      logger.mark('公共查询ck已用完')
       return false
     }
 
     let ltuid = list[0]
 
     if (!pubCk[ltuid]) {
-      logger.info(`公共查询ck错误[ltuid:${ltuid}]`)
+      logger.mark(`公共查询ck错误[ltuid:${ltuid}]`)
       await redis.zAdd(MysInfo.key.count, { score: 99, value: ltuid })
       return false
     }
@@ -378,7 +380,7 @@ export default class MysInfo {
 
     this.expire(MysInfo.key.count)
 
-    if (userNum > 0) logger.info(`加载用户ck：${userNum}个`)
+    if (userNum > 0) logger.mark(`加载用户ck：${userNum}个`)
   }
 
   /** 加入公共ck池 */
@@ -407,7 +409,7 @@ export default class MysInfo {
         await redis.zAdd(MysInfo.key.count, { score: 0, value: ltuid })
       }
     }
-    if (pubNum > 0) logger.info(`加载公共ck：${pubNum}个`)
+    if (pubNum > 0) logger.mark(`加载公共ck：${pubNum}个`)
   }
 
   async initBingCk () {

@@ -33,7 +33,7 @@ export class quit extends plugin {
     /** 自动退群 */
     if (Array.from(gl).length <= other.autoQuit && !hasMaster) {
       await this.e.reply('禁止拉群，已自动退出')
-      logger.info(`[自动退群] ${this.e.group_id}`)
+      logger.mark(`[自动退群] ${this.e.group_id}`)
       setTimeout(() => {
         this.e.group.quit()
       }, 2000)
