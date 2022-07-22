@@ -200,13 +200,19 @@ class GsCfg {
 
   /**
    * 获取消息内原神角色名称，uid
+   * @param msg 判断消息
+   * @param filterMsg 过滤消息
    * @return roleId 角色id
    * @return name 角色名称
    * @return alias 当前别名
    * @return uid 游戏uid
    */
-  getRole (msg) {
+  getRole (msg, filterMsg = '') {
     let alias = msg.replace(/#|老婆|老公|[1|2|5][0-9]{8}/g, '').trim()
+    if (filterMsg) {
+      alias = alias.replace(new RegExp(filterMsg, 'g'), '').trim()
+    }
+
     /** 判断是否命中别名 */
     let roleId = this.roleNameToID(alias)
     if (!roleId) return false

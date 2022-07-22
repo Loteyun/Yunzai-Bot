@@ -127,7 +127,8 @@ export default class MysSign extends base {
   async signTask () {
     let cks = await MysInfo.getBingCkUid()
     let uids = lodash.map(cks, 'uid')
-    logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(uids.length)}`)
+    let finishTime = moment().add(uids.length * 10.2, 's').format('MM-DD HH:mm:ss')
+    logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(uids.length)} ${finishTime}完成`)
 
     for (let uid of uids) {
       let ck = cks[uid]

@@ -66,7 +66,7 @@ body {
   position: absolute;
   left: 0;
   background-size: 100% auto;
-  background-image: url(../../img/dailyNote/items/bg.png);
+  background-image: url(../../html/dailyNote/items/bg.png);
 }
 .item .main .icon {
   width: 25px;
