@@ -20,7 +20,7 @@ export default class MysSign extends base {
     let ck = gsCfg.getBingCkSingle(mysSign.userId)
 
     if (lodash.isEmpty(ck)) {
-      e.reply('无法签到，请先#绑定cookie', false, { at: true })
+      e.reply('无法签到，请先#绑定cookie\n发送【cookie帮助】查看配置教程', false, { at: true })
       return false
     }
 
