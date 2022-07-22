@@ -187,6 +187,7 @@ export default class MysInfo {
       for (let i in res) {
         res[i] = await mysInfo.checkCode(res[i], res[i].api)
         if (res[i].retcode === 0) continue
+        break
       }
     } else {
       res = await mysApi.getData(api, data)
@@ -436,12 +437,12 @@ export default class MysInfo {
       case 10001:
       case 10103:
         if (/(登录|login)/i.test(res.message)) {
-          await this.delCk()
           if (this.ckInfo.uid) {
-            this.e.reply(`UID:${this.ckInfo.uid}米游社cookie已失效，请重新绑定cookie`)
+            this.e.reply(`UID:${this.ckInfo.uid}，米游社cookie已失效，请重新绑定cookie`)
           } else {
-            this.e.reply(`ltuid:${this.ckInfo.ltuid}米游社cookie已失效`)
+            this.e.reply(`ltuid:${this.ckInfo.ltuid}，米游社cookie已失效`)
           }
+          await this.delCk()
         } else {
           this.e.reply(`米游社接口报错，暂时无法查询：${res.message}`)
         }
@@ -455,9 +456,9 @@ export default class MysInfo {
         break
       case 10102:
         if (res.message == 'Data is not public for the user') {
-          this.e.reply(`\nUID:${this.ckInfo.uid}米游社数据未公开`, false, { at: this.userId })
+          this.e.reply(`\nUID:${this.ckInfo.uid}，米游社数据未公开`, false, { at: this.userId })
         } else {
-          this.e.reply(`uid:${this.uid}请先去米游社绑定角色`)
+          this.e.reply(`uid:${this.uid}，请先去米游社绑定角色`)
         }
         break
       default:

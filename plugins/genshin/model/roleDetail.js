@@ -26,8 +26,6 @@ export default class RoleDetail extends base {
     let param = { character: '' }
     if (this.isBing) {
       param.detail = { avatar_id: this.e.roleId }
-      this.e.reply2 = this.e.reply
-      this.e.reply = () => {}
     }
 
     let res = await MysInfo.get(this.e, param)
