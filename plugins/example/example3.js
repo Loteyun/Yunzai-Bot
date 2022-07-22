@@ -30,3 +30,27 @@ export class newcomer extends plugin {
     await this.reply(msg)
   }
 }
+
+export class outNotice extends plugin {
+  constructor () {
+    super({
+      name: '退群通知',
+      dsc: 'xxx永远离开了我们',
+      event: 'notice.group.decrease'
+    })
+
+    /** 退群提示词 */
+    this.tips = '永远离开了我们。。'
+  }
+
+  async accept () {
+    let msg = this.e.member?.card ?? this.e.member?.nickname
+    if (msg) {
+      msg = `${msg}(${this.e.user_id}) ${this.tips}`
+    } else {
+      msg = `${this.e.user_id} ${this.tips}`
+    }
+    logger.mark(`[退出通知]${this.e.logText} ${msg}`)
+    await this.reply(msg)
+  }
+}
