@@ -414,6 +414,7 @@ export default class GachaData extends base {
   lotteryInfo () {
     let info = `累计「${this.user[this.type].num5}抽」`
     let nowFive = 0
+    let nowFour = 0
 
     this.res.forEach((v, i) => {
       if (v.star == 5) {
@@ -421,6 +422,9 @@ export default class GachaData extends base {
         info = `${v.name}「${v.num}抽」`
         if (v.isBigUP) info += '大保底'
         if (v.isBing) info += '定轨'
+      }
+      if (v.star == 4) {
+        nowFour++
       }
     })
 
@@ -430,6 +434,7 @@ export default class GachaData extends base {
     let res = {
       info,
       nowFive,
+      nowFour,
       poolName,
       isWeapon: this.type == 'weapon',
       bingWeapon: this.getBingWeapon(true),

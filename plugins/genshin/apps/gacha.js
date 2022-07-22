@@ -39,6 +39,11 @@ export class gacha extends plugin {
     /** 撤回消息 */
     let recallMsg = this.GachaData.set.delMsg
 
+    /** 出货了不撤回 */
+    if (data.nowFive >= 1 || data.nowFour >= 4) {
+      recallMsg = 0
+    }
+
     await this.reply(img, false, { recallMsg })
   }
 
@@ -75,7 +80,7 @@ export class gacha extends plugin {
         msg += `\n本周：${user.week.num}个五星`
       }
     } else {
-      msg += `今日十连已抽，累计${nowCount}抽无五星`
+      msg += `今日已抽，累计${nowCount}抽无五星`
     }
     this.reply(msg)
     return true
