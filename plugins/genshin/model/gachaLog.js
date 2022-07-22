@@ -653,7 +653,7 @@ export default class GachaLog extends base {
 
     return {
       ...this.screenData,
-      save_id: this.uid,
+      saveId: this.uid,
       uid: this.uid,
       type: this.type,
       typeName: this.typeName,

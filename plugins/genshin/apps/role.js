@@ -24,6 +24,10 @@ export class role extends plugin {
         {
           reg: '^#[上期|往期|本期]*(深渊|深境|深境螺旋)[上期|往期|本期]*[ |0-9]*$',
           fnc: 'abyss'
+        },
+        {
+          reg: '^#*[上期|往期|本期]*(深渊|深境|深境螺旋)[上期|往期|本期]*[第]*(9|10|11|12|九|十|十一|十二)层[ |0-9]*$',
+          fnc: 'abyssFloor'
         }
       ]
     })
@@ -83,12 +87,21 @@ export class role extends plugin {
     if (img) await this.reply(img)
   }
 
-  /** 刻晴 */
+  /** 深渊 */
   async abyss () {
     let data = await new Abyss(this.e).getAbyss()
     if (!data) return
 
     let img = await puppeteer.screenshot('abyss', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 深渊十二层 */
+  async abyssFloor () {
+    let data = await new Abyss(this.e).getAbyssFloor()
+    if (!data) return
+
+    let img = await puppeteer.screenshot('abyssFloor', data)
     if (img) await this.reply(img)
   }
 }
