@@ -169,15 +169,21 @@ export default class User extends base {
     let uids = lodash.map(ck, 'uid')
     let msg = []
 
+    let isCkUid = false
     for (let i in uids) {
       let tmp = `${Number(i) + 1}、${uids[i]}`
       if (ck[uids[i]].isMain && redisUid == uids[i]) {
         tmp += ' [√]'
+        isCkUid = true
       }
       msg.push(tmp)
     }
 
     msg = '当前绑定cookie Uid列表\n通过【#uid+序号】来切换uid\n' + msg.join('\n')
+
+    if (!isCkUid && redisUid) {
+      msg = `当前uid：${redisUid}\n` + msg
+    }
 
     await this.e.reply(msg)
   }

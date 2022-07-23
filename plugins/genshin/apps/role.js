@@ -1,10 +1,11 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import RoleIndex from '../model/roleIndex.js'
-import RoleDetail from '../model/roleDetail.js'
 import fs from 'node:fs'
 import gsCfg from '../model/gsCfg.js'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
+import RoleIndex from '../model/roleIndex.js'
+import RoleDetail from '../model/roleDetail.js'
 import Abyss from '../model/abyss.js'
+import Weapon from '../model/weapon.js'
 export class role extends plugin {
   constructor () {
     super({
@@ -28,6 +29,10 @@ export class role extends plugin {
         {
           reg: '^#*[上期|往期|本期]*(深渊|深境|深境螺旋)[上期|往期|本期]*[第]*(9|10|11|12|九|十|十一|十二)层[ |0-9]*$',
           fnc: 'abyssFloor'
+        },
+        {
+          reg: '^#[五星|四星|5星|4星]*武器$',
+          fnc: 'weapon'
         }
       ]
     })
@@ -102,6 +107,15 @@ export class role extends plugin {
     if (!data) return
 
     let img = await puppeteer.screenshot('abyssFloor', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 武器 */
+  async weapon () {
+    let data = await Weapon.get(this.e)
+    if (!data) return
+
+    let img = await puppeteer.screenshot('weapon', data)
     if (img) await this.reply(img)
   }
 }
