@@ -17,7 +17,7 @@ export class add extends plugin {
       name: '添加表情',
       dsc: '添加表情，文字等',
       event: 'message',
-      permission: 50000,
+      priority: 50000,
       rule: [
         {
           reg: '^#添加(.*)',
