@@ -76,11 +76,12 @@ export default class ExportLog extends base {
 
     let res = this.getAllList()
 
-    /** 出来卡池数据 */
+    /** 处理卡池数据 */
     let xlsxData = this.xlsxDataPool(res)
     /** 处理所有数据 */
     xlsxData.push(this.xlsxDataAll(res))
 
+    /** node-xlsx导出的buffer有点大.. */
     let buffer = xlsx.build(xlsxData)
     let saveFile = `${this.path}${this.uid}/${this.uid}.xlsx`
 
@@ -115,23 +116,39 @@ export default class ExportLog extends base {
     let res = {
       list: []
     }
+    let tmpId = {}
     for (let v of this.pool) {
       let json = `${this.path}${this.uid}/${v.type}.json`
       json = JSON.parse(fs.readFileSync(json, 'utf8'))
+      json = json.reverse()
       res[v.type] = json
       for (let v of json) {
         if (v.gacha_type == 301 || v.gacha_type == 400) {
-          v.uigf_gacha_type = 301
+          v.uigf_gacha_type = '301'
         } else {
           v.uigf_gacha_type = v.gacha_type
         }
-        if (!v.id) {
-          v.id = moment(v.time).format('x')
+        let id = v.id
+        if (!id) {
+          id = moment(v.time).format('x') + '000000'
+          v.id = id
+        } else {
+          if (id.length == 13) {
+            v.id = `${id}000000`
+          }
+        }
+
+        if (tmpId[id]) {
+          let newId = `${id}00000${tmpId[id].length}`
+          tmpId[id].push(newId)
+          v.id = newId
+        } else {
+          tmpId[id] = [id]
         }
         res.list.push(v)
       }
     }
-
+    res.list = lodash.orderBy(res.list, ['id', 'asc'])
     return res
   }
 
@@ -173,6 +190,7 @@ export default class ExportLog extends base {
     for (let v of data.list) {
       let tmp = []
       for (let i of list[0]) {
+        if (i == 'id' || i == 'uigf_gacha_type') v[i] = String(v[i])
         tmp.push(v[i])
       }
       list.push(tmp)

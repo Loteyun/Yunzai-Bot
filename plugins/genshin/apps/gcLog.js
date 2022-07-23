@@ -34,7 +34,7 @@ export class gcLog extends plugin {
         },
         {
           reg: '^#*导出记录(excel|xlsx|json)*$',
-          event: 'message.private',
+          event: 'message',
           fnc: 'exportLog'
         }
       ]
@@ -108,6 +108,11 @@ export class gcLog extends plugin {
 
   /** 导出记录 */
   async exportLog () {
+    if (this.e.isGroup) {
+      await this.reply('请私聊导出', false, { at: true })
+      return
+    }
+
     let exportLog = new ExportLog(this.e)
 
     if (this.e.msg.includes('json')) {
