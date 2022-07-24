@@ -33,7 +33,7 @@ export default class Weapon extends base {
       uid: this.e.uid,
       ...this.dealData(avatars)
     }
-    console.log(data)
+
     return data
   }
 

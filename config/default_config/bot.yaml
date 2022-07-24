@@ -1,4 +1,5 @@
-# 日志等级:trace,debug,info,warn,error,fatal,mark,off
+# 日志等级:trace,debug,info,warn,fatal,mark,error,off
+# mark时只显示执行命令，不显示聊天记录
 log_level: info
 # 群聊和频道中过滤自己的消息
 ignore_self: true

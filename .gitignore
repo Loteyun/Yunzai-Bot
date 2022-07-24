@@ -135,3 +135,4 @@ dump.rdb
 data/
 config/test/*
 !config/test/default.yaml
+logs/
