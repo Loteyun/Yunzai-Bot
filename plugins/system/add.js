@@ -112,7 +112,7 @@ export class add extends plugin {
   checkAuth () {
     let groupCfg = cfg.getGroup(this.group_id)
     if (groupCfg.imgAddLimit == 2 && !this.e.isMaster) {
-      this.e.reply('暂无权限，只有主人才能添加')
+      this.e.reply('暂无权限，只有主人才能操作')
       return false
     }
     if (groupCfg.imgAddLimit == 1 && !this.e.isMaster) {
@@ -123,7 +123,7 @@ export class add extends plugin {
         return false
       }
       if (!this.e.member.is_admin) {
-        this.e.reply('暂无权限，只有管理员才能添加')
+        this.e.reply('暂无权限，只有管理员才能操作')
         return false
       }
     }
@@ -444,6 +444,7 @@ export class add extends plugin {
   async del () {
     await this.getGroupId()
     if (!this.group_id) return false
+    if (!this.checkAuth()) return
 
     this.initTextArr()
 

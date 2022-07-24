@@ -47,7 +47,12 @@ export default class MysSign extends base {
       }
     }
 
-    if (signInfo.retcode !== 0) return false
+    if (signInfo.retcode !== 0) {
+      return {
+        retcode: signInfo.retcode,
+        msg: `签到失败：${signInfo.message || '未知错误'}`
+      }
+    }
 
     this.signInfo = signInfo.data
 

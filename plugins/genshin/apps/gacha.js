@@ -82,7 +82,7 @@ export class gacha extends plugin {
     } else {
       msg += `今日已抽，累计${nowCount}抽无五星`
     }
-    this.reply(msg)
+    this.reply(msg, false, { recallMsg: this.GachaData.set.delMsg })
     return true
   }
 
