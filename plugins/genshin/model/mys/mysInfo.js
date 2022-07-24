@@ -461,6 +461,10 @@ export default class MysInfo {
           this.e.reply(`uid:${this.uid}，请先去米游社绑定角色`)
         }
         break
+      // 伙伴不存在~
+      case -1002:
+        if (res.api == 'detail') res.retcode = 0
+        break
       default:
         this.e.reply(`米游社接口报错，暂时无法查询：${res.message || 'error'}`)
         break

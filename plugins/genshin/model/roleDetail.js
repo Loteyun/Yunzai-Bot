@@ -24,16 +24,13 @@ export default class RoleDetail extends base {
     this.isBing = await MysInfo.checkUidBing(uid)
 
     let param = { character: '' }
-    if (this.isBing) {
+    if (this.isBing && this.e.roleId != '20000000') {
       param.detail = { avatar_id: this.e.roleId }
     }
 
     let res = await MysInfo.get(this.e, param)
     if (!res || res[0].retcode !== 0) return false
 
-    if (this.isBing) this.e.reply = this.e.reply2
-
-    /** 获取技能等级 */
     let avatar = await this.getAvatar(res[0].data)
     if (!avatar) return false
 
@@ -53,13 +50,17 @@ export default class RoleDetail extends base {
       skill
     }
 
-    this.e.reply = this.e.replyNew
-
     return data
   }
 
   async getAvatar (data) {
     let avatars = lodash.keyBy(data.avatars, 'id')
+
+    /** 旅行者特殊处理 */
+    if (this.e.roleId == '20000000') {
+      if (avatars['10000007']) this.e.roleId = '10000007'
+      if (avatars['10000005']) this.e.roleId = '10000005'
+    }
 
     if (!avatars[this.e.roleId]) {
       await this.noAvatar()
