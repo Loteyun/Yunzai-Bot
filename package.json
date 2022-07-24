@@ -11,6 +11,7 @@
     "dev": "node app.js dev",
     "start": "pm2 start ./config/pm2/pm2.json",
     "stop": "pm2 stop ./config/pm2/pm2.json",
+    "restart": "pm2 restart ./config/pm2/pm2.json",
     "log": "pm2 logs --lines 400 Yunzai-Bot"
   },
   "dependencies": {
