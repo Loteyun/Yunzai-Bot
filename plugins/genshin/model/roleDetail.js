@@ -3,11 +3,16 @@ import MysInfo from './mys/mysInfo.js'
 import gsCfg from './gsCfg.js'
 import lodash from 'lodash'
 import { segment } from 'oicq'
+import fs from 'node:fs'
+import fetch from 'node-fetch'
+import common from '../../../lib/common/common.js'
 
 export default class RoleDetail extends base {
   constructor (e) {
     super(e)
     this.model = 'roleDetail'
+
+    this.path = './data/roleDetail/'
   }
 
   static async get (e) {
@@ -39,6 +44,8 @@ export default class RoleDetail extends base {
     if (res[1] && res[1].data) {
       skill = this.getSkill(res[1].data, avatar)
     }
+
+    if (await this.checkImg(avatar.name)) return false
 
     /** 截图数据 */
     let data = {
@@ -200,5 +207,53 @@ export default class RoleDetail extends base {
     }
 
     return skill
+  }
+
+  async checkImg (name) {
+    if (fs.existsSync(`${this.path}{name}1.png`)) return true
+
+    let ret = await this.getData()
+    if (!ret) return false
+    if (ret.retcode != 0) return false
+
+    let img = {}
+    for (let post of ret.data.posts) {
+      img[post.post.subject] = post.post.images
+    }
+    if (!img[name]) {
+      this.e.reply(`暂无${name}素材`)
+      return false
+    }
+
+    await this.downImg(name, img[name])
+
+    return true
+  }
+
+  async getData () {
+    let url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&collection_id=1057503'
+
+    try {
+      let ret = await fetch(url, { method: 'get' })
+      if (!ret.ok) {
+        return false
+      }
+      return await ret.json()
+    } catch (error) {
+      return false
+    }
+  }
+
+  async downImg (name, arr) {
+    let ret = []
+    arr.forEach((v, k) => ret.push(common.downFile(v, `${this.path}${name}${++k}.png`)))
+
+    try {
+      ret = await Promise.all(ret)
+      return true
+    } catch (error) {
+      logger.error(`${this.e.logFnc} ${error}}`)
+      return false
+    }
   }
 }

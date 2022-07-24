@@ -54,6 +54,10 @@ export class role extends plugin {
     if (!fs.existsSync(set)) {
       fs.copyFileSync('./plugins/genshin/defSet/mys/set.yaml', set)
     }
+
+    if (!fs.existsSync('./data/roleDetail')) {
+      fs.mkdirSync('./data/roleDetail')
+    }
   }
 
   /** 接受到消息都会先执行一次 */
