@@ -45,7 +45,7 @@ export default class RoleDetail extends base {
       skill = this.getSkill(res[1].data, avatar)
     }
 
-    if (await this.checkImg(avatar.name)) return false
+    if (!await this.checkImg(avatar.name)) return false
 
     /** 截图数据 */
     let data = {
@@ -57,6 +57,7 @@ export default class RoleDetail extends base {
       skill
     }
 
+    this.e.msg += ` ${avatar.name}`
     return data
   }
 

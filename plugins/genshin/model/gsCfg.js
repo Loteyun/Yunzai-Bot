@@ -3,6 +3,8 @@ import chokidar from 'chokidar'
 import fs from 'node:fs'
 import { promisify } from 'node:util'
 import lodash from 'lodash'
+import MysInfo from './mys/mysInfo.js'
+
 /** 配置文件 */
 class GsCfg {
   constructor () {
@@ -179,7 +181,6 @@ class GsCfg {
 
   /** 公共配置ck文件修改hook */
   async change_myspubCk () {
-    let MysInfo = await import('./mys/mysInfo.js').default
     await new MysInfo().addPubCk()
   }
 
