@@ -113,7 +113,7 @@ export default class MysSign extends base {
   }
 
   async bbsSign () {
-    let key = `${this.prefix}signed:${this.mysApi.uid}`
+    let key = `${this.prefix}isSigned:${this.mysApi.uid}`
 
     let signed = await redis.get(key)
     if (signed) return true
@@ -122,32 +122,37 @@ export default class MysSign extends base {
 
     /** 签到成功 */
     if (sign.retcode === 0 || sign.retcode === -5003) {
-      redis.setEx(key, moment().endOf('day').format('X'), '1')
+      logger.mark(`签到成功[qq:${this.e.user_id}][uid:${this.mysApi.uid}]`)
+      let end = Number(moment().endOf('day').format('X')) - Number(moment().format('X'))
+      redis.setEx(key, end, '1')
+      await common.sleep(10000)
       return true
     }
 
+    logger.mark(`签到失败[qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
     return false
   }
 
-  async signTask () {
+  async signTask (manual) {
     let cks = await MysInfo.getBingCkUid()
     let uids = lodash.map(cks, 'uid')
     let finishTime = moment().add(uids.length * 10.2, 's').format('MM-DD HH:mm:ss')
-    logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(uids.length)} ${finishTime}完成`)
+    logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(uids.length)} ${finishTime} 完成`)
+
+    if (manual) {
+      await this.e.reply('开始签到任务，完成前请勿重复执行')
+      await this.e.reply(`签到ck：${uids.length}个\n预计需要：${this.countTime(uids.length)}\n完成时间：${finishTime}`)
+    }
 
     for (let uid of uids) {
       let ck = cks[uid]
-      this.e = { user_id: ck.qq }
+      this.e.user_id = ck.qq
 
-      let res = await this.doSign(ck, false)
+      await this.doSign(ck, false)
+    }
 
-      if (res.retcode == 0) {
-        logger.mark(`签到成功[qq:${ck.qq}][uid:${uid}]`)
-      } else {
-        logger.mark(`签到失败[qq:${ck.qq}][uid:${uid}]：${res.msg}`)
-      }
-
-      await common.sleep(10000)
+    if (manual) {
+      this.e.reply('签到任务完成')
     }
   }
 
