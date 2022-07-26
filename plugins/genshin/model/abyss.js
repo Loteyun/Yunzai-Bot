@@ -19,7 +19,7 @@ export default class Abyss extends base {
 
     if (!res || res.retcode !== 0) return false
 
-    if (res.data.total_battle_times <= 0) {
+    if (res.data?.total_battle_times <= 0) {
       await this.e.reply(`uid${this.e.uid}，暂无挑战数据。`)
       return false
     }

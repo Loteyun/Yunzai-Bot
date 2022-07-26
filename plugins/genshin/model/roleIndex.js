@@ -198,7 +198,7 @@ export default class RoleIndex extends base {
     if (roleArr.length <= 0) {
       return abyss
     }
-    if (resAbyss.total_battle_times <= 0) {
+    if (resAbyss?.total_battle_times <= 0) {
       return abyss
     }
     if (resAbyss.reveal_rank.length <= 0) {
