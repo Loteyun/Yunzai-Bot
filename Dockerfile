@@ -3,7 +3,7 @@ FROM node:current-alpine
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY ./fonts/wqy-microhei.ttc /usr/share/fonts/wqy-microhei.ttc
+COPY ./resources/font/wqy-microhei.ttc /usr/share/fonts/wqy-microhei.ttc
 
 RUN apk -U --no-cache update \
     && apk -U --no-cache upgrade \
