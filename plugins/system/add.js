@@ -218,11 +218,13 @@ export class add extends plugin {
     /** 添加内容 */
     let message = this.e.message
 
+    let retMsg = this.getRetMsg()
+    this.finish('addContext')
+
     for (let i in message) {
       if (message[i].type == 'at') {
         if (message[i].qq == Bot.uin) {
           this.e.reply('添加内容不能@机器人！')
-          this.finish('addContext')
           return
         }
       }
@@ -248,8 +250,6 @@ export class add extends plugin {
       textArr[this.group_id].set(keyWord, text)
     }
 
-    let retMsg = this.getRetMsg()
-
     if (text.length > 1 && retMsg[0].type != 'image') {
       retMsg.push(String(text.length))
     }
@@ -258,7 +258,6 @@ export class add extends plugin {
 
     this.saveJson()
     this.e.reply(retMsg)
-    this.finish('addContext')
   }
 
   /** 添加成功回复消息 */
