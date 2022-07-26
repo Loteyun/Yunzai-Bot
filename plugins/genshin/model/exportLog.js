@@ -3,9 +3,10 @@ import cfg from '../../../lib/config/config.js'
 import common from '../../../lib/common/common.js'
 import fs from 'node:fs'
 import moment from 'moment'
-import xlsx from 'node-xlsx'
 import GachaLog from './gachaLog.js'
 import lodash from 'lodash'
+
+let xlsx = {}
 
 export default class ExportLog extends base {
   constructor (e) {
@@ -29,6 +30,12 @@ export default class ExportLog extends base {
       302: '武器',
       200: '常驻'
     }
+  }
+
+  async initXlsx () {
+    if (!lodash.isEmpty(xlsx)) return xlsx
+
+    xlsx = await import('node-xlsx')
   }
 
   async exportJson () {
@@ -71,6 +78,8 @@ export default class ExportLog extends base {
     await this.getUid()
 
     if (!this.uid) return false
+
+    await this.initXlsx()
 
     logger.mark(`${this.e.logFnc} 开始导出${this.uid}.xlsx`)
 
