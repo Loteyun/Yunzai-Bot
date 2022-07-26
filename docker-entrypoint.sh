@@ -45,6 +45,8 @@ if [ -d $MIAO_PLUGIN_PATH"/.git" ]; then
         git pull origin master --allow-unrelated-histories
     fi
 
+    pnpm install image-size
+
     echo -e "\n ================ \n ${Version} ${BlueBG} 喵喵插件版本信息 ${Font} \n ================ \n"
     git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
 fi
