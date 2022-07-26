@@ -25,7 +25,7 @@ WORKDIR /app/Yunzai-Bot
 
 COPY docker-entrypoint.sh entrypoint.sh
 
-COPY docker-redis.yaml ./config/config/redis.yaml
+COPY docker-redis.yaml ./config/default_config/redis.yaml
 
 RUN chmod +x ./entrypoint.sh
 
