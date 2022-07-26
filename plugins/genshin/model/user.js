@@ -34,7 +34,7 @@ export default class User extends base {
     })
 
     if (!param.cookie_token) {
-      await this.e.reply('发送cookie不完整\n请【重新登录】米游社，刷新cookie')
+      await this.e.reply('发送cookie不完整\n请退出米游社【重新登录】，刷新完整cookie')
       return
     }
 
