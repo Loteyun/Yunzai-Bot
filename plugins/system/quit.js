@@ -5,33 +5,27 @@ export class quit extends plugin {
     super({
       name: 'notice',
       dsc: '自动退群',
-      event: 'notice.group'
+      event: 'notice.group.increase'
     })
   }
 
   async accept () {
-    if (this.e.sub_type == 'increase') {
-      this.autoQuit()
-    }
-  }
+    if (this.e.user_id != Bot.uin) return
 
-  /** 自动退群 */
-  async autoQuit () {
     let other = cfg.other
     if (other.autoQuit <= 0) return
 
     /** 判断主人，主人邀请不退群 */
     let gl = await this.e.group.getMemberMap()
-    let hasMaster = false
-    for (let qq of other.masterQQ) {
+    for (let qq of cfg.masterQQ) {
       if (gl.has(qq)) {
-        hasMaster = true
-        break
+        logger.mark(`[主人拉群] ${this.e.group_id}`)
+        return
       }
     }
 
     /** 自动退群 */
-    if (Array.from(gl).length <= other.autoQuit && !hasMaster) {
+    if (Array.from(gl).length <= other.autoQuit) {
       await this.e.reply('禁止拉群，已自动退出')
       logger.mark(`[自动退群] ${this.e.group_id}`)
       setTimeout(() => {
