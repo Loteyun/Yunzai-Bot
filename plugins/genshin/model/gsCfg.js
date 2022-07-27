@@ -30,7 +30,7 @@ class GsCfg {
 
   /** 用户配置 */
   getConfig (app, name) {
-    let ignore = ['mys.pubCk', 'gacha.set']
+    let ignore = ['mys.pubCk', 'gacha.set', 'bot.help']
 
     if (ignore.includes(`${app}.${name}`)) {
       return this.getYaml(app, name, 'config')
@@ -51,9 +51,14 @@ class GsCfg {
 
     if (this[type][key]) return this[type][key]
 
-    this[type][key] = YAML.parse(
-      fs.readFileSync(file, 'utf8')
-    )
+    try {
+      this[type][key] = YAML.parse(
+        fs.readFileSync(file, 'utf8')
+      )
+    } catch (error) {
+      logger.error(`[${app}][${name}] 格式错误 ${error}`)
+      return false
+    }
 
     this.watch(file, app, name, type)
 
