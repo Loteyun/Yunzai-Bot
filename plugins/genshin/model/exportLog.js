@@ -213,6 +213,8 @@ export default class ExportLog extends base {
 
   /** xlsx导入抽卡记录 */
   async logXlsx () {
+    await this.initXlsx()
+
     let uid = /[1-9][0-9]{8}/g.exec(this.e.file.name)[0]
     let textPath = `${this.path}${this.e.file.name}`
     /** 获取文件下载链接 */
