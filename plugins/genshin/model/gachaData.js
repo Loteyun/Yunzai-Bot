@@ -72,7 +72,7 @@ export default class GachaData extends base {
   /** 奖池数据 */
   async getPool () {
     let poolArr = gsCfg.getdefSet('gacha', 'pool')
-
+    poolArr = [...poolArr].reverse()
     /** 获取设置卡池 */
     let NowPool = poolArr.find((val) => new Date().getTime() <= new Date(val.endTime).getTime()) || poolArr.pop()
     this.NowPool = NowPool
