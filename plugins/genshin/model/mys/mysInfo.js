@@ -626,7 +626,7 @@ export default class MysInfo {
   static async checkUidBing (uid) {
     await MysInfo.initCk()
 
-    if (bingCkUid[uid]) return true
+    if (bingCkUid[uid]) return bingCkUid[uid]
 
     return false
   }

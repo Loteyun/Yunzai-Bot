@@ -162,7 +162,7 @@ export default class User extends base {
     let redisUid = await redis.get(this.uidKey)
 
     if (lodash.isEmpty(ck)) {
-      await this.e.reply(`当前绑定uid：${redisUid}`)
+      await this.e.reply(`当前绑定uid：${redisUid || '无'}`, false, { at: true })
       return
     }
 

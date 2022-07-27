@@ -118,7 +118,8 @@ export default class MysApi {
 
     if (!url) return false
 
-    let cahce = await redis.get(`Yz:genshin:mys:cache:${type}:${this.uid}`)
+    let cacheKey = this.cacheKey(type, data)
+    let cahce = await redis.get(cacheKey)
     if (cahce && !isForce) return JSON.parse(cahce)
 
     headers.Cookie = this.cookie
@@ -156,13 +157,13 @@ export default class MysApi {
       return false
     }
 
-    if (res.retcode !== 0) {
+    if (res.retcode !== 0 && this.option.log) {
       logger.debug(`[米游社接口][请求参数] ${url} ${JSON.stringify(param)}`)
     }
 
     res.api = type
 
-    this.cache(res, type)
+    this.cache(res, cacheKey)
 
     return res
   }
@@ -212,8 +213,12 @@ export default class MysApi {
     return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
   }
 
-  async cache (res, type) {
+  cacheKey (type, data) {
+    return 'Yz:genshin:mys:cache:' + md5(this.uid + type + JSON.stringify(data))
+  }
+
+  async cache (res, cacheKey) {
     if (!res || res.retcode !== 0) return
-    redis.setEx(`Yz:genshin:mys:cache:${type}:${this.uid}`, 300, JSON.stringify(res))
+    redis.setEx(cacheKey, 1800, JSON.stringify(res))
   }
 }
