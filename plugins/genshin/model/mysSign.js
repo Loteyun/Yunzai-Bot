@@ -122,14 +122,14 @@ export default class MysSign extends base {
 
     /** 签到成功 */
     if (sign.retcode === 0 || sign.retcode === -5003) {
-      logger.mark(`签到成功[qq:${this.e.user_id}][uid:${this.mysApi.uid}]`)
+      logger.mark(`[签到成功][qq:${this.e.user_id}][uid:${this.mysApi.uid}]`)
       let end = Number(moment().endOf('day').format('X')) - Number(moment().format('X'))
       redis.setEx(key, end, '1')
       await common.sleep(10000)
       return true
     }
 
-    logger.mark(`签到失败[qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
+    logger.error(`[签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
     return false
   }
 

@@ -53,7 +53,7 @@ export default class RoleList extends base {
   async getAllSkill (avatars) {
     let skillRet = []; let skill = []
     // 批量获取技能数据，分组10个id一次，延迟100ms
-    let num = 20; let ms = 100
+    let num = 10; let ms = 100
     let avatarArr = lodash.chunk(avatars, num)
 
     let start = Date.now()
@@ -205,7 +205,7 @@ export default class RoleList extends base {
     return {
       avatars: avatarRet,
       bgType: Math.ceil(Math.random() * 3),
-      abbr: gsCfg.getdefSet('role', 'other').sortName,
+      abbr: { ...gsCfg.getdefSet('role', 'other').sortName, ...gsCfg.getdefSet('weapon', 'other').sortName },
       displayMode,
       week: [3, 1, 2][week % 3],
       talentNotice
