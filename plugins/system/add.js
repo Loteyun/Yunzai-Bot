@@ -128,6 +128,11 @@ export class add extends plugin {
       }
     }
 
+    if (!this.e.isGroup && groupCfg.addPrivate != 1) {
+      this.e.reply('禁止私聊添加')
+      return false
+    }
+
     return true
   }
 

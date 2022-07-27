@@ -40,7 +40,7 @@ export class strategy extends plugin {
 
     let role = gsCfg.getRole(this.e.msg, '攻略|更新')
 
-    if (!role) return
+    if (!role) return false
 
     /** 主角特殊处理 */
     if (['10000005', '10000007', '20000000'].includes(String(role.roleId))) {

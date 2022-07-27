@@ -194,7 +194,7 @@ export default class RoleList extends base {
 
     let talentNotice = `*技能数据会缓存${this.cacheCd}分钟`
     if (noTalent) {
-      talentNotice = '未绑定体力Cookie，无法获取天赋列表。请回复 #体力 获取配置教程'
+      talentNotice = '该uid未绑定Cookie，无法获取技能数据。回复【#体力帮助】查看教程'
     }
 
     let week = new Date().getDay()
