@@ -21,7 +21,6 @@ export class user extends plugin {
         },
         {
           reg: '^#绑定(cookie|ck)',
-          event: 'message.private',
           fnc: 'bingCk'
         },
         {
@@ -121,7 +120,7 @@ export class user extends plugin {
     let set = gsCfg.getConfig('mys', 'set')
 
     if (!this.e.ck) {
-      await this.reply(`请发送米游社cookie，获取教程：\n${set.cookieDoc}`)
+      await this.reply(`请【私聊】发送米游社cookie，获取教程：\n${set.cookieDoc}`)
       return
     }
 

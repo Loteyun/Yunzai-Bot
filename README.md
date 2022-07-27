@@ -3,7 +3,7 @@
 
 项目仅供学习交流使用，严禁用于任何商业用途和非法行为
 
-v3.0重构版本，[功能](https://github.com/Le-niao/Yunzai-Bot/tree/main/plugins/genshin)缓慢咕咕中。。。
+[目前功能](https://github.com/Le-niao/Yunzai-Bot/tree/main/plugins/genshin)
 
 ## 使用方法
 >环境准备： Windows or Linux，Node.js（[版本至少v16以上](http://nodejs.cn/download/)），[Redis](resources/readme/命令说明.md#window安装redis)

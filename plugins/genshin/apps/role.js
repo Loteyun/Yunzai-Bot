@@ -6,6 +6,8 @@ import RoleIndex from '../model/roleIndex.js'
 import RoleDetail from '../model/roleDetail.js'
 import Abyss from '../model/abyss.js'
 import Weapon from '../model/weapon.js'
+import RoleBag from '../model/roleBag.js'
+import RoleList from '../model/roleList.js'
 export class role extends plugin {
   constructor () {
     super({
@@ -31,8 +33,16 @@ export class role extends plugin {
           fnc: 'abyssFloor'
         },
         {
-          reg: '^#[五星|四星|5星|4星]*武器$',
+          reg: '^#[五星|四星|5星|4星]*武器[ |0-9]*$',
           fnc: 'weapon'
+        },
+        {
+          reg: '^#(五星|四星|5星|4星|命座|角色|武器)[命座|角色|背包]*[信息|阵容]*[ |0-9]*$',
+          fnc: 'roleBag'
+        },
+        {
+          reg: '^#*(我的)*(技能|天赋|武器|角色|练度|五|四|5|4|星)+(汇总|统计|列表)(force|五|四|5|4|星)*[ |0-9]*$',
+          fnc: 'roleList'
         }
       ]
     })
@@ -120,6 +130,24 @@ export class role extends plugin {
     if (!data) return
 
     let img = await puppeteer.screenshot('weapon', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 角色背包 */
+  async roleBag () {
+    let data = await RoleBag.get(this.e)
+    if (!data) return
+
+    let img = await puppeteer.screenshot('roleBag', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 练度统计 */
+  async roleList () {
+    let data = await RoleList.get(this.e)
+    if (!data) return
+
+    let img = await puppeteer.screenshot('roleList', data)
     if (img) await this.reply(img)
   }
 }
