@@ -395,11 +395,11 @@ export default class MysInfo {
     let pubNum = 0
     for (let v of ckArr) {
       let [ltuid = ''] = v.match(/ltuid=(\w{0,9})/g)
-      if (!ltuid) return
+      if (!ltuid) continue
 
       ltuid = String(lodash.trim(ltuid, 'ltuid='))
 
-      if (isNaN(ltuid)) return
+      if (isNaN(ltuid)) continue
 
       pubCk[ltuid] = v
 
