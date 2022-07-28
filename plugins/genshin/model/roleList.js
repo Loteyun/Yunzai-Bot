@@ -84,7 +84,13 @@ export default class RoleList extends base {
       id: avatar.id
     }
 
-    let skillList = lodash.orderBy(res.data.skill_list, ['id'], ['asc'])
+    let type = 'id'
+    if ([10000021].includes(Number(avatar.id))) {
+      type = 'group_id'
+    }
+
+    let skillList = lodash.orderBy(res.data.skill_list, [type], ['asc'])
+
     for (let val of skillList) {
       val.level_original = val.level_current
       if (val.name.includes('普通攻击')) {

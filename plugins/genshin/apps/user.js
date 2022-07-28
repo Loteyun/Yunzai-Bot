@@ -43,11 +43,11 @@ export class user extends plugin {
         //   fnc: 'resetCk'
         // }
         {
-          reg: '^#绑定(uid)?[1|2|5][0-9]{8}',
+          reg: '^#绑定(uid|UID)?[1|2|5][0-9]{8}',
           fnc: 'bingUid'
         },
         {
-          reg: '^#(我的)?uid[0-9]{0,2}$',
+          reg: '^#(我的)?(uid|UID)[0-9]{0,2}$',
           fnc: 'showUid'
         }
       ]

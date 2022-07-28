@@ -18,6 +18,8 @@ class GsCfg {
 
     /** 监听文件 */
     this.watcher = { config: {}, defSet: {} }
+
+    this.ignore = ['mys.pubCk', 'gacha.set', 'bot.help', 'role.name']
   }
 
   /**
@@ -30,9 +32,7 @@ class GsCfg {
 
   /** 用户配置 */
   getConfig (app, name) {
-    let ignore = ['mys.pubCk', 'gacha.set', 'bot.help']
-
-    if (ignore.includes(`${app}.${name}`)) {
+    if (this.ignore.includes(`${app}.${name}`)) {
       return this.getYaml(app, name, 'config')
     }
 
@@ -155,18 +155,48 @@ class GsCfg {
 
   /** 原神角色别名转id */
   roleNameToID (keyword) {
-    if (!this.nameID) {
-      this.nameID = new Map()
-      let nameArr = this.getdefSet('role', 'name')
-      for (let i in nameArr) {
-        for (let val of nameArr[i]) {
-          this.nameID.set(val, i)
-        }
+    if (!isNaN(keyword)) keyword = Number(keyword)
+    this.getAbbr()
+    let roelId = this.nameID.get(String(keyword))
+    return roelId || false
+  }
+
+  /** 获取角色别名 */
+  getAbbr () {
+    if (this.nameID) return
+
+    this.nameID = new Map()
+
+    let nameArr = this.getdefSet('role', 'name')
+    let nameArrUser = this.getConfig('role', 'name')
+
+    let nameID = {}
+
+    for (let i in nameArr) {
+      nameID[nameArr[i][0]] = i
+      for (let abbr of nameArr[i]) {
+        this.nameID.set(String(abbr), i)
       }
     }
-    if (!isNaN(keyword)) keyword = Number(keyword)
-    let roelId = this.nameID.get(keyword)
-    return roelId || false
+
+    for (let i in nameArrUser) {
+      for (let abbr of nameArrUser[i]) {
+        this.nameID.set(String(abbr), nameID[i])
+      }
+    }
+  }
+
+  /** 返回所有别名，包括用户自定义的 */
+  getAllAbbr () {
+    let nameArr = this.getdefSet('role', 'name')
+    let nameArrUser = this.getConfig('role', 'name')
+
+    for (let i in nameArrUser) {
+      let id = this.roleNameToID(i)
+      nameArr[id] = nameArr[id].concat(nameArrUser[i])
+    }
+
+    return nameArr
   }
 
   /**

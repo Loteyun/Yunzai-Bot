@@ -471,15 +471,15 @@ export class add extends plugin {
 
     let arr = textArr[this.group_id].get(keyWord)
     if (!arr) {
-      await this.e.reply(`暂无此表情：${keyWord}`)
-      return
+      // await this.e.reply(`暂无此表情：${keyWord}`)
+      return false
     }
 
     let tmp = []
     if (num) {
       if (!arr[index]) {
-        await this.e.reply(`暂无此表情：${keyWord}${num}`)
-        return
+        // await this.e.reply(`暂无此表情：${keyWord}${num}`)
+        return false
       }
 
       tmp = arr[index]
@@ -598,11 +598,14 @@ export class add extends plugin {
   }
 
   async makeForwardMsg (qq, title, msg) {
-    let info = await Bot.getGroupMemberInfo(this.group_id, qq)
-
+    let nickname = Bot.nickname
+    if (this.e.isGroup) {
+      let info = await Bot.getGroupMemberInfo(this.e.group_id, qq)
+      nickname = info.card ?? info.nickname
+    }
     let userInfo = {
       user_id: Bot.uin,
-      nickname: info.card ?? info.nickname
+      nickname
     }
 
     let forwardMsg = [

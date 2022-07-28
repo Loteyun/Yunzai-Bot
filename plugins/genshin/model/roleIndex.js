@@ -99,6 +99,7 @@ export default class RoleIndex extends base {
       [
         { lable: '成就', num: stats.achievement_number },
         { lable: '角色数', num: stats.avatar_number },
+        { lable: '等级', num: resIndex?.role?.level ?? 0 },
         {
           lable: '总宝箱',
           num:
@@ -107,8 +108,7 @@ export default class RoleIndex extends base {
           stats.exquisite_chest_number +
           stats.common_chest_number +
           stats.magic_chest_number
-        },
-        { lable: '深境螺旋', num: stats.spiral_abyss }
+        }
       ],
       [
         { lable: '华丽宝箱', num: stats.luxurious_chest_number },

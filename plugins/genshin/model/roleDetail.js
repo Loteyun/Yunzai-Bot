@@ -173,9 +173,15 @@ export default class RoleDetail extends base {
   getSkill (data = {}, avatar) {
     if (!this.isBing) return {}
 
-    let skill = {}
-    skill.id = this.e.roleId
-    let skillList = lodash.orderBy(data.skill_list, ['id'], ['asc'])
+    let skill = {
+      id: avatar.id
+    }
+
+    let type = 'id'
+    if ([10000021].includes(Number(avatar.id))) {
+      type = 'group_id'
+    }
+    let skillList = lodash.orderBy(data.skill_list, [type], ['asc'])
 
     for (let val of skillList) {
       val.level_original = val.level_current
@@ -211,7 +217,7 @@ export default class RoleDetail extends base {
   }
 
   async checkImg (name) {
-    if (fs.existsSync(`${this.path}{name}1.png`)) return true
+    if (fs.existsSync(`${this.path}${name}1.png`)) return true
 
     let ret = await this.getData()
     if (!ret) return false
