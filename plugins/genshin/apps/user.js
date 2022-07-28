@@ -12,7 +12,7 @@ export class user extends plugin {
       priority: 300,
       rule: [
         {
-          reg: '^(体力|ck|cookie)帮助',
+          reg: '^#*(体力|ck|cookie)帮助',
           fnc: 'ckHelp'
         },
         {
