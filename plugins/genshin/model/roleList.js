@@ -76,7 +76,7 @@ export default class RoleList extends base {
   }
 
   async getSkill (avatar) {
-    let force = this.e.msg.includes('force')
+    let force = !this.e.msg.includes('force')
     let res = await this.mysApi.getData('detail', { avatar_id: avatar.id }, force)
     if (!res || res.retcode !== 0 || !res.data.skill_list) return false
 

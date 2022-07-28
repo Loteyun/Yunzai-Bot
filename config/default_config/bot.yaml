@@ -6,6 +6,6 @@ ignore_self: true
 # 被风控时是否尝试用分片发送
 resend: false
 # ffmpeg
-ffmpeg_path:
-ffprobe_path:
+ffmpeg_path: 
+ffprobe_path: 
   
