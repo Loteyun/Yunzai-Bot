@@ -113,14 +113,14 @@ export default class MysApi {
     return 'cn_gf01'
   }
 
-  async getData (type, data = {}, isForce = true) {
+  async getData (type, data = {}, cached = false) {
     let { url, headers, body } = this.getUrl(type, data)
 
     if (!url) return false
 
     let cacheKey = this.cacheKey(type, data)
     let cahce = await redis.get(cacheKey)
-    if (cahce && !isForce) return JSON.parse(cahce)
+    if (cahce) return JSON.parse(cahce)
 
     headers.Cookie = this.cookie
     let param = {
@@ -163,7 +163,7 @@ export default class MysApi {
 
     res.api = type
 
-    this.cache(res, cacheKey)
+    if (cached) this.cache(res, cacheKey)
 
     return res
   }

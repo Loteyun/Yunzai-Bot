@@ -12,7 +12,7 @@ export class user extends plugin {
       priority: 300,
       rule: [
         {
-          reg: '^(体力|ck|cookie)帮助',
+          reg: '^#*(体力|ck|cookie)帮助',
           fnc: 'ckHelp'
         },
         {
@@ -29,7 +29,7 @@ export class user extends plugin {
           fnc: 'noLogin'
         },
         {
-          reg: '#?我的(ck|cookie)',
+          reg: '#?我的(ck|cookie)$',
           event: 'message',
           fnc: 'myCk'
         },
@@ -151,6 +151,10 @@ export class user extends plugin {
 
   /** 我的ck */
   async myCk () {
+    if (this.e.isGroup) {
+      await this.reply('请私聊查看')
+      return
+    }
     await this.User.myCk()
   }
 

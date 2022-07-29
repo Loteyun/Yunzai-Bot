@@ -2,6 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import fs from 'node:fs'
 import gsCfg from '../model/gsCfg.js'
 import YAML from 'yaml'
+import lodash from 'lodash'
 
 export class abbrSet extends plugin {
   constructor (e) {
@@ -152,7 +153,7 @@ export class abbrSet extends plugin {
     let name = gsCfg.getdefSet('role', 'name')[role.roleId]
     let nameUser = gsCfg.getConfig('role', 'name')[role.name] ?? []
 
-    let list = [...name, ...nameUser]
+    let list = lodash.uniq([...name, ...nameUser])
 
     let msg = []
     for (let i in list) {
