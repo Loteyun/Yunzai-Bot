@@ -25,14 +25,16 @@ else
     git pull origin main --allow-unrelated-histories
 fi
 
-echo -e "\n ================ \n ${Version} ${BlueBG} Yunzai-Bot 版本信息 ${Font} \n ================ \n"
-git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
-
 echo -e "\n ================ \n ${Info} ${GreenBG} 更新 Yunzai-Bot 运行依赖 ${Font} \n ================ \n"
+
 pnpm install -P
 
+echo -e "\n ================ \n ${Version} ${BlueBG} Yunzai-Bot 版本信息 ${Font} \n ================ \n"
+
+git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
+
 if [ -d $MIAO_PLUGIN_PATH"/.git" ]; then
-    echo -e "\n ================ \n ${Info} ${GreenBG} 拉取喵喵插件更新 ${Font} \n ================ \n"
+    echo -e "\n ================ \n ${Info} ${GreenBG} 拉取 喵喵插件 更新 ${Font} \n ================ \n"
     cd $MIAO_PLUGIN_PATH
 
     if [[ ! -z $(git status -s) ]]; then
@@ -45,9 +47,12 @@ if [ -d $MIAO_PLUGIN_PATH"/.git" ]; then
         git pull origin master --allow-unrelated-histories
     fi
 
+    echo -e "\n ================ \n ${Info} ${GreenBG} 更新 喵喵插件 运行依赖 ${Font} \n ================ \n"
+
     pnpm install image-size
 
     echo -e "\n ================ \n ${Version} ${BlueBG} 喵喵插件版本信息 ${Font} \n ================ \n"
+
     git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
 fi
 
@@ -64,7 +69,13 @@ if [ -d $XIAOYAO_CVS_PATH"/.git" ]; then
     else
         git pull origin master --allow-unrelated-histories
     fi
+
+    echo -e "\n ================ \n ${Info} ${GreenBG} 更新 xiaoyao-cvs 插件运行依赖 ${Font} \n ================ \n"
+
+    pnpm install promise-retry superagent
+
     echo -e "\n ================ \n ${Version} ${BlueBG} xiaoyao-cvs 插件版本信息 ${Font} \n ================ \n"
+
     git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
 fi
 
