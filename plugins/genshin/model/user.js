@@ -42,6 +42,9 @@ export default class User extends base {
     this.ck = `ltoken=${param.ltoken};ltuid=${param.ltuid};cookie_token=${param.cookie_token}; account_id=${param.account_id};`
     this.ltuid = param.ltuid
 
+    /** 米游币签到字段 */
+    this.login_ticket = param.login_ticket ?? ''
+
     /** 检查ck是否失效 */
     if (!await this.checkCk()) {
       logger.mark(`绑定cookie错误：${this.checkMsg || 'cookie错误'}`)
@@ -99,6 +102,7 @@ export default class User extends base {
       qq: this.e.user_id,
       ck: this.ck,
       ltuid: this.ltuid,
+      login_ticket: this.login_ticket,
       isMain: true
     }
 
