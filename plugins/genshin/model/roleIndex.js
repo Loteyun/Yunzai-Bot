@@ -187,7 +187,7 @@ export default class RoleIndex extends base {
       line,
       avatars,
       abyss,
-      bg: lodash.random(1, 6)
+      bg: lodash.random(1, 7)
     }
   }
 

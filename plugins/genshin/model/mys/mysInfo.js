@@ -82,7 +82,11 @@ export default class MysInfo {
 
   /** 获取uid */
   static async getUid (e) {
-    if (e.uid) return e.uid
+    if (e.uid) {
+      /** 没有绑定的自动绑定 */
+      MysInfo.uidBingQQ(e, e.uid)
+      return String(e.uid)
+    }
 
     let { msg = '', at = '' } = e
 
@@ -105,7 +109,11 @@ export default class MysInfo {
 
     /** 命令消息携带 */
     uid = matchUid(msg)
-    if (uid) return String(uid)
+    if (uid) {
+      /** 没有绑定的自动绑定 */
+      MysInfo.uidBingQQ(e, uid)
+      return String(uid)
+    }
 
     /** 绑定的uid */
     uid = await redis.get(`${MysInfo.key.qqUid}${e.user_id}`)
@@ -140,6 +148,13 @@ export default class MysInfo {
     }
 
     return bingCkQQ[e.user_id]
+  }
+
+  /** 没有绑定的自动绑定 */
+  static async uidBingQQ (e, uid) {
+    if (!await redis.get(`${MysInfo.key.qqUid}${e.user_id}`)) {
+      await redis.setEx(`${MysInfo.key.qqUid}${e.user_id}`, 3600 * 24 * 30, String(uid))
+    }
   }
 
   /** 判断绑定ck才能查询 */
