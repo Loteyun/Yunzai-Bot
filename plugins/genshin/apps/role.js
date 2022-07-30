@@ -25,6 +25,10 @@ export class role extends plugin {
           fnc: 'roleDetail'
         },
         {
+          reg: '^(#*角色3|#*角色卡片|角色)$',
+          fnc: 'roleCard'
+        },
+        {
           reg: '^#[上期|往期|本期]*(深渊|深境|深境螺旋)[上期|往期|本期]*[ |0-9]*$',
           fnc: 'abyss'
         },
@@ -148,6 +152,15 @@ export class role extends plugin {
     if (!data) return
 
     let img = await puppeteer.screenshot('roleList', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 角色卡片 */
+  async roleCard () {
+    let data = await new RoleIndex(this.e).roleCard()
+    if (!data) return
+
+    let img = await puppeteer.screenshot('roleCard', data)
     if (img) await this.reply(img)
   }
 }

@@ -9,6 +9,12 @@ export default class RoleIndex extends base {
     this.model = 'roleIndex'
     this.other = gsCfg.getdefSet('role', 'other')
     this.wother = gsCfg.getdefSet('weapon', 'other')
+
+    this.areaName = {
+      3: '雪山',
+      6: '层岩巨渊',
+      7: '层岩地下'
+    }
   }
 
   static async get (e) {
@@ -294,5 +300,93 @@ export default class RoleIndex extends base {
       msg += day + '天'
     }
     return msg
+  }
+
+  async roleCard () {
+    this.model = 'roleCard'
+    let res = await MysInfo.get(this.e, 'index')
+
+    if (!res || res.retcode !== 0) return false
+
+    return this.roleCardData(res.data)
+  }
+
+  roleCardData (res) {
+    let stats = res.stats
+    let line = [
+      [
+        { lable: '活跃天数', num: stats.active_day_number },
+        { lable: '成就', num: stats.achievement_number },
+        { lable: '角色数', num: stats.avatar_number },
+        {
+          lable: '总宝箱',
+          num:
+            stats.precious_chest_number +
+            stats.luxurious_chest_number +
+            stats.exquisite_chest_number +
+            stats.common_chest_number +
+            stats.magic_chest_number
+        },
+        { lable: '深境螺旋', num: stats.spiral_abyss }
+      ],
+      [
+        { lable: '华丽宝箱', num: stats.luxurious_chest_number },
+        { lable: '珍贵宝箱', num: stats.precious_chest_number },
+        { lable: '精致宝箱', num: stats.exquisite_chest_number },
+        { lable: '普通宝箱', num: stats.common_chest_number },
+        { lable: '奇馈宝箱', num: stats.magic_chest_number }
+      ]
+    ]
+
+    let explor1 = []
+    let explor2 = []
+
+    res.world_explorations = lodash.orderBy(res.world_explorations, ['id'], ['desc'])
+
+    for (let val of res.world_explorations) {
+      val.name = this.areaName[val.id] ? this.areaName[val.id] : lodash.truncate(val.name, { length: 6 })
+
+      let tmp = { lable: val.name, num: `${val.exploration_percentage / 10}%` }
+
+      if (explor1.length < 5) {
+        explor1.push(tmp)
+      } else {
+        explor2.push(tmp)
+      }
+    }
+
+    explor2 = explor2.concat([
+      { lable: '雷神瞳', num: stats.electroculus_number },
+      { lable: '岩神瞳', num: stats.geoculus_number },
+      { lable: '风神瞳', num: stats.anemoculus_number }
+    ])
+
+    line.push(explor1)
+    line.push(explor2.slice(0, 5))
+
+    let avatars = res.avatars
+    avatars = avatars.slice(0, 8)
+
+    let element = gsCfg.getdefSet('element', 'role')
+    for (let i in avatars) {
+      if (avatars[i].id == 10000005) {
+        avatars[i].name = '空'
+      }
+      if (avatars[i].id == 10000007) {
+        avatars[i].name = '荧'
+      }
+      avatars[i].element = element[avatars[i].name]
+    }
+
+    return {
+      saveId: this.e.uid,
+      uid: this.e.uid,
+      name: this.e.sender.card.replace(this.e.uid, '').trim(),
+      user_id: this.e.user_id,
+      line,
+      avatars,
+      bg: lodash.random(1, 3),
+      ...this.screenData
+    }
   }
 }
