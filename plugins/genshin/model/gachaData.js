@@ -24,6 +24,9 @@ export default class GachaData extends base {
     this.type = 'role'
     /** 抽卡结果 */
     this.res = []
+
+    this.fiveHave = []
+    this.fourHave = []
   }
 
   static async init (e) {
@@ -187,7 +190,7 @@ export default class GachaData extends base {
     if (save) this.saveUser()
 
     /** 排序 星级，角色，武器 */
-    this.res = lodash.orderBy(this.res, ['star', 'type', 'index'], ['desc', 'asc', 'asc'])
+    this.res = lodash.orderBy(this.res, ['star', 'type', 'have', 'index'], ['desc', 'asc', 'asc', 'asc'])
 
     return this.res
   }
@@ -265,6 +268,14 @@ export default class GachaData extends base {
     /** 本周五星数 */
     this.user.week.num++
 
+    let have = false
+    /** 重复抽中转换星辉 */
+    if (this.fiveHave.includes(tmpName)) {
+      have = true
+    } else {
+      this.fiveHave.push(tmpName)
+    }
+
     this.res.push({
       name: tmpName,
       star: 5,
@@ -273,7 +284,9 @@ export default class GachaData extends base {
       element: this.ele[tmpName] || '',
       index: this.index,
       isBigUP,
-      isBing
+      isBing,
+      have,
+      rand: lodash.random(1, 7)
     })
 
     return true
@@ -329,12 +342,21 @@ export default class GachaData extends base {
       }
     }
 
+    let have = false
+    /** 重复抽中转换星辉 */
+    if (this.fourHave.includes(tmpName)) {
+      have = true
+    } else {
+      this.fourHave.push(tmpName)
+    }
+
     this.res.push({
       name: tmpName,
       star: 4,
       type,
       element: this.ele[tmpName] || '',
-      index: this.index
+      index: this.index,
+      have
     })
 
     return true
