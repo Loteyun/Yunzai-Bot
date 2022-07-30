@@ -11,6 +11,7 @@
     <div class="main_box">
       <div class="base_info">
         <div class="uid">ID: {{uid}}</div>
+        {{ if list.length>8 }}
         <div class="lab">
           <div class="lab-item">
             <div class="lab-item-5"></div>
@@ -41,6 +42,7 @@
             <div class="lab-item-text">法器：{{count['法器']}}</div>
           </div>
         </div>
+        {{/if}}
       </div>
       <div class="item_box">
         {{each list val}}

@@ -322,7 +322,7 @@ export default class GachaLog extends base {
     await this.getUid()
 
     if (!this.uid) {
-      await this.e.reply('当前绑定uid暂无抽卡记录')
+      // await this.e.reply('当前绑定uid暂无抽卡记录')
       return false
     }
 

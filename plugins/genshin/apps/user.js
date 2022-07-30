@@ -29,7 +29,7 @@ export class user extends plugin {
           fnc: 'noLogin'
         },
         {
-          reg: '#?我的(ck|cookie)$',
+          reg: '^#?我的(ck|cookie)$',
           event: 'message',
           fnc: 'myCk'
         },
