@@ -7,6 +7,9 @@
 !system
 !system/**
 
+!other
+!other/**
+
 !example
 example/**
 !example/example*.js
