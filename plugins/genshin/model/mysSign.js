@@ -68,9 +68,15 @@ export default class MysSign extends base {
         totalSignDay++
       }
 
+      let tips = '签到成功'
+
+      if (this.signed) {
+        tips = '今天已签到'
+      }
+
       return {
         retcode: 0,
-        msg: `uid:${ck.uid}，签到成功\n第${totalSignDay}天奖励：${reward}`
+        msg: `uid:${ck.uid}，${tips}\n第${totalSignDay}天奖励：${reward}`
       }
     }
 
@@ -116,8 +122,15 @@ export default class MysSign extends base {
     let key = `${this.prefix}isSigned:${this.mysApi.uid}`
 
     let signed = await redis.get(key)
-    if (signed) return true
+    if (signed) {
+      this.signed = true
+      this.signApi = false
+      return true
+    } else {
+      this.signed = false
+    }
 
+    this.signApi = true
     let sign = await this.mysApi.getData('bbs_sign')
 
     /** 签到成功 */
@@ -125,7 +138,6 @@ export default class MysSign extends base {
       logger.mark(`[签到成功][qq:${this.e.user_id}][uid:${this.mysApi.uid}]`)
       let end = Number(moment().endOf('day').format('X')) - Number(moment().format('X'))
       redis.setEx(key, end, '1')
-      await common.sleep(10000)
       return true
     }
 
@@ -149,6 +161,7 @@ export default class MysSign extends base {
       this.e.user_id = ck.qq
 
       await this.doSign(ck, false)
+      if (this.signApi) await common.sleep(10000)
     }
 
     if (manual) {
