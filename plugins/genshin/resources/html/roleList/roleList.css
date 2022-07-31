@@ -261,9 +261,8 @@ body {
 }
 
 .talent_list .avatar > div.fetter10 {
-  /* background: url("./hart.png") center center no-repeat; */
-  /* background-size: contain; */
-  /* color: #fff; */
+  background: url("../../img/other/fetter10.png") center center no-repeat;
+  background-size: contain;
 }
 
 .talent_list .cons span {

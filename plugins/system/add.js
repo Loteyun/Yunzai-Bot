@@ -684,6 +684,7 @@ export class add extends plugin {
       }
     } else if (msg.includes('{face')) {
       let tmp = msg.match(/{face(:|_)(.+?)}/g)
+      if (!tmp) return msg
       msg = []
       for (let face of tmp) {
         let id = face.match(/\d+/g)

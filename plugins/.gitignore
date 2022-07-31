@@ -8,7 +8,8 @@
 !system/**
 
 !other
-!other/**
+other/**
+!other/restart.js
 
 !example
 example/**

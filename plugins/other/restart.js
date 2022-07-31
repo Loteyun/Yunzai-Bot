@@ -68,7 +68,8 @@ export class other extends plugin {
       })
     } catch (error) {
       redis.del(this.key)
-      this.e.reply(`操作失败！\n${error.stack}`)
+      let e = error.stack ?? error
+      this.e.reply(`操作失败！\n${e}`)
     }
 
     return true

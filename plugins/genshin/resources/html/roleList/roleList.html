@@ -24,13 +24,10 @@
           <div class="talent_list">
             <div class="avatar th">
               <div class="index">#</div>
-              <div class="name">
-                角色
-              </div>
+              <div class="name">角色</div>
               <div class="lvl">等级</div>
               <div class="fetter">好感</div>
               <div class="cons">命座</div>
-
               <div class="talent">普攻</div>
               <div class="talent">技能</div>
               <div class="talent">爆发</div>
@@ -51,7 +48,7 @@
                 </div>
               </div>
               <div class="lvl lvl{{avatar.level}}">{{avatar.level}}</div>
-              <div class="fetter fetter{{avatar.fetter}}">{{avatar.fetter}}</div>
+              <div class="fetter fetter{{avatar.fetter}}">{{avatar.fetter == 10 ? '' : avatar.fetter}}</div>
               <div class="cons"><span class="life{{avatar.cons}}">{{avatar.cons}}</span></div>
               <div class="talent lv{{avatar.a_lvl}}">{{avatar.a}}</div>
               <div class="talent lv{{avatar.e_lvl}} {{avatar.e_plus ? 'talent_plus':''}}">{{avatar.e}}</div>
