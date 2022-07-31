@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 set -e
 
 GreenBG="\\033[42;37m"
@@ -81,5 +81,12 @@ fi
 
 cd $WORK_DIR
 
-echo -e "\n ================ \n ${Info} ${GreenBG} 启动Yunzai-Bot ${Font} \n ================ \n"
+echo -e "\n ================ \n ${Info} ${GreenBG} 初始化 Docker 环境 ${Font} \n ================ \n"
+
+if [ -f "./config/config/redis.yaml" ]; then
+    sed -i 's/127.0.0.1/redis/g' ./config/config/redis.yaml
+fi
+
+echo -e "\n ================ \n ${Info} ${GreenBG} 启动 Yunzai-Bot ${Font} \n ================ \n"
+
 node app
