@@ -25,6 +25,8 @@ export class strategy extends plugin {
     this.path = './data/strategy_xf'
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
     this.collection_id = [839176, 839179, 839181]
+
+    this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
   }
 
   /** 初始化创建配置文件 */
@@ -93,7 +95,7 @@ export class strategy extends plugin {
 
     logger.mark(`${this.e.logFnc} 下载${name}攻略图`)
 
-    if (!await common.downFile(url, this.sfPath)) {
+    if (!await common.downFile(url + this.oss, this.sfPath)) {
       return false
     }
 
