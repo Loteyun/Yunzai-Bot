@@ -3,7 +3,7 @@ FROM node:current-alpine
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-ADD https://raw.githubusercontent.com/SirlyDreamer/Yunzai-Bot/master/fonts/wqy-microhei.ttc /usr/share/fonts/wqy-microhei.ttc
+ADD https://raw.githubusercontent.com/SirlyDreamer/Yunzai-Bot/fonts/wqy-microhei/wqy-microhei.ttc /usr/share/fonts/wqy-microhei.ttc
 
 RUN apk -U --no-cache update \
     && apk -U --no-cache upgrade \
