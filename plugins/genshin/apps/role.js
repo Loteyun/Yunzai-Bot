@@ -47,6 +47,10 @@ export class role extends plugin {
         {
           reg: '^#*(我的)*(技能|天赋|武器|角色|练度|五|四|5|4|星)+(汇总|统计|列表)(force|五|四|5|4|星)*[ |0-9]*$',
           fnc: 'roleList'
+        },
+        {
+          reg: '^#(角色2|宝箱|成就|尘歌壶|家园|探索|探险|声望|探险度|探索度)[ |0-9]*$',
+          fnc: 'roleExplore'
         }
       ]
     })
@@ -161,6 +165,15 @@ export class role extends plugin {
     if (!data) return
 
     let img = await puppeteer.screenshot('roleCard', data)
+    if (img) await this.reply(img)
+  }
+
+  /** 探险 */
+  async roleExplore () {
+    let data = await new RoleIndex(this.e).roleExplore()
+    if (!data) return
+
+    let img = await puppeteer.screenshot('roleExplore', data)
     if (img) await this.reply(img)
   }
 }

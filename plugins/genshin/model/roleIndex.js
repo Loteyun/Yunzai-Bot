@@ -15,6 +15,8 @@ export default class RoleIndex extends base {
       6: '层岩巨渊',
       7: '层岩地下'
     }
+
+    this.headIndexStyle = `<style> .head_box { background: url(${this.screenData.pluResPath}img/roleIndex/namecard/${lodash.random(1, 7)}.png) #f5f5f5; background-position-x: 30px; background-repeat: no-repeat; border-radius: 15px; font-family: tttgbnumber; padding: 10px 20px; position: relative; background-size: auto 101%; }</style>`
   }
 
   static async get (e) {
@@ -193,7 +195,7 @@ export default class RoleIndex extends base {
       line,
       avatars,
       abyss,
-      bg: lodash.random(1, 7)
+      headIndexStyle: this.headIndexStyle
     }
   }
 
@@ -318,6 +320,7 @@ export default class RoleIndex extends base {
         { lable: '活跃天数', num: stats.active_day_number },
         { lable: '成就', num: stats.achievement_number },
         { lable: '角色数', num: stats.avatar_number },
+        { lable: '等级', num: res?.role?.level ?? 0 },
         {
           lable: '总宝箱',
           num:
@@ -326,8 +329,7 @@ export default class RoleIndex extends base {
             stats.exquisite_chest_number +
             stats.common_chest_number +
             stats.magic_chest_number
-        },
-        { lable: '深境螺旋', num: stats.spiral_abyss }
+        }
       ],
       [
         { lable: '华丽宝箱', num: stats.luxurious_chest_number },
@@ -386,6 +388,117 @@ export default class RoleIndex extends base {
       line,
       avatars,
       bg: lodash.random(1, 3),
+      ...this.screenData
+    }
+  }
+
+  async roleExplore () {
+    this.model = 'roleExplore'
+    let res = await MysInfo.get(this.e, 'index')
+
+    if (!res || res.retcode !== 0) return false
+
+    return this.roleExploreData(res.data)
+  }
+
+  roleExploreData (res) {
+    let stats = res.stats
+    let line = [
+      [
+        { lable: '成就', num: stats.achievement_number },
+        { lable: '角色数', num: stats.avatar_number },
+        { lable: '等级', num: res?.role?.level ?? 0 },
+        {
+          lable: '总宝箱',
+          num:
+          stats.precious_chest_number +
+          stats.luxurious_chest_number +
+          stats.exquisite_chest_number +
+          stats.common_chest_number +
+          stats.magic_chest_number
+        }
+      ],
+      [
+        { lable: '华丽宝箱', num: stats.luxurious_chest_number },
+        { lable: '珍贵宝箱', num: stats.precious_chest_number },
+        { lable: '精致宝箱', num: stats.exquisite_chest_number },
+        { lable: '普通宝箱', num: stats.common_chest_number }
+      ],
+      [
+        { lable: '风神瞳', num: stats.anemoculus_number },
+        { lable: '岩神瞳', num: stats.geoculus_number },
+        { lable: '雷神瞳', num: stats.electroculus_number },
+        { lable: '传送点', num: stats.way_point_number }
+      ]
+    ]
+    // 尘歌壶
+    if (res.homes && res.homes.length > 0) {
+      line.push([
+        { lable: '家园等级', num: res.homes[0].level },
+        { lable: '最高仙力', num: res.homes[0].comfort_num },
+        { lable: '获得摆设', num: res.homes[0].item_num },
+        { lable: '历史访客', num: res.homes[0].visit_num }
+      ])
+    }
+
+    res.world_explorations = lodash.orderBy(res.world_explorations, ['id'], ['desc'])
+
+    let explor = []
+    for (let val of res.world_explorations) {
+      if (val.id == 7) continue
+
+      val.name = this.areaName[val.id] ? this.areaName[val.id] : lodash.truncate(val.name, { length: 6 })
+
+      let tmp = {
+        name: val.name,
+        line: [
+          {
+            name: val.name,
+            text: `${val.exploration_percentage / 10}%`
+          }
+        ]
+      }
+
+      if (['蒙德', '璃月', '稻妻', '须弥'].includes(val.name)) {
+        tmp.line.push({
+          name: '声望',
+          text: `${val.level}级`
+        })
+      }
+
+      if (val.id == 6) {
+        let underground = lodash.find(res.world_explorations, function (o) {
+          return o.id == 7
+        })
+        if (underground) {
+          tmp.line.push({
+            name: this.areaName[underground.id],
+            text: `${underground.exploration_percentage / 10}%`
+          })
+        }
+      }
+
+      if (['雪山', '稻妻', '层岩巨渊'].includes(val.name)) {
+        if (val.offerings[0].name.includes('流明石')) {
+          val.offerings[0].name = '流明石'
+        }
+
+        tmp.line.push({
+          name: val.offerings[0].name,
+          text: `${val.offerings[0].level}级`
+        })
+      }
+
+      explor.push(tmp)
+    }
+
+    return {
+      saveId: this.e.uid,
+      uid: this.e.uid,
+      activeDay: this.dayCount(stats.active_day_number),
+      line,
+      explor,
+      headIndexStyle: this.headIndexStyle,
       ...this.screenData
     }
   }
