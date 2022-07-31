@@ -44,7 +44,7 @@ export default class MysInfo {
       type: ''
     }
 
-    this.auth = ['dailyNote', 'bbs_sign_info', 'bbs_sign_home', 'bbs_sign']
+    this.auth = ['dailyNote', 'bbs_sign_info', 'bbs_sign_home', 'bbs_sign', 'ys_ledger']
   }
 
   static async init (e, api) {
@@ -61,7 +61,7 @@ export default class MysInfo {
 
     if (mysInfo.checkAuth(api)) {
       /** 获取ck绑定uid */
-      mysInfo.uid = (await MysInfo.getSelfUid(e)).uid
+      mysInfo.uid = (await MysInfo.getSelfUid(e))
     } else {
       /** 获取uid */
       mysInfo.uid = await MysInfo.getUid(e)
@@ -130,7 +130,7 @@ export default class MysInfo {
 
   /** 获取ck绑定uid */
   static async getSelfUid (e) {
-    if (e.uid) return e.uid
+    // if (e.uid) return e.uid
 
     let { msg = '', at = '' } = e
 
@@ -147,7 +147,7 @@ export default class MysInfo {
       return false
     }
 
-    return bingCkQQ[e.user_id]
+    return bingCkQQ[e.user_id].uid
   }
 
   /** 没有绑定的自动绑定 */

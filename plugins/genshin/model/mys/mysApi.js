@@ -179,7 +179,7 @@ export default class MysApi {
       }
     }
     return {
-      'x-rpc-app_version': '2.31.1',
+      'x-rpc-app_version': '2.33.1',
       'x-rpc-client_type': 5,
       DS: this.getDs(query, body)
     }

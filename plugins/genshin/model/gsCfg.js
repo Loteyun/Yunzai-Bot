@@ -92,7 +92,7 @@ class GsCfg {
     return { ...this.getdefSet('element', 'role'), ...this.getdefSet('element', 'weapon') }
   }
 
-  /** 读取用户绑定的ck */
+  /** 读取所有用户绑定的ck */
   async getBingCk () {
     let ck = {}
     let ckQQ = {}
@@ -120,6 +120,7 @@ class GsCfg {
     return { ck, ckQQ }
   }
 
+  /** 获取qq号绑定ck */
   getBingCkSingle (userId) {
     let file = `./data/MysCookie/${userId}.yaml`
     try {

@@ -83,7 +83,7 @@ export class other extends plugin {
       msg: 0,
       screenshot: 0
     }
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i <= 6; i++) {
       let date = moment().startOf('week').add(i, 'days').format('MMDD')
 
       week.msg += Number(await redis.get(`${this.msgKey.day}${date}`)) ?? 0

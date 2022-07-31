@@ -59,6 +59,12 @@ export default class User extends base {
     logger.mark(`${this.e.logFnc} 保存cookie成功 [uid:${this.uid}] [ltuid:${this.ltuid}]`)
 
     await this.e.reply(`绑定cookie成功,uid:${this.uid}`)
+    let msg = '命令说明：\n【#体力】查询当前树脂'
+    msg += '\n【#签到】原神米游社签到'
+    msg += '\n【#原石】查看原石札记'
+    msg += '\n【#原石统计】统计原石数据'
+    msg += '\n【#练度统计】可以查看更多数据'
+    await this.e.reply(msg)
   }
 
   /** 检查ck是否可用 */
@@ -273,7 +279,7 @@ export default class User extends base {
     ck = lodash.find(ck, (v) => { return v.isMain })
 
     if (!lodash.isEmpty(ck)) {
-      await this.e.reply(`当前绑定cookie\nUid：${ck.uid}`)
+      await this.e.reply(`当前绑定cookie\nuid：${ck.uid}`)
       await this.e.reply(ck.ck)
     }
   }
