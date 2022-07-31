@@ -110,6 +110,9 @@ body {
   clip-path: url(#wishframe);
   z-index: 100;
 }
+.fiveHave{
+  filter: brightness(0.8);
+}
 .item-character-img{
   height: 100%;
   position: absolute;
@@ -145,6 +148,24 @@ body {
   left: 16px;
   top: 389px;
   z-index: 120;
+}
+.item-starGold{
+  position: absolute;
+  width: 76px;
+  left: 18px;
+  top: 246px;
+  z-index: 120;
+  box-shadow: 0px 10px 20px #ffffffb3,0px -10px 20px #ffffffb3;
+  border-radius: 10px;
+}
+.item-starlight{
+  position: absolute;
+  width: 76px;
+  left: 18px;
+  top: 330px;
+  z-index: 120;
+  box-shadow: 0px 10px 20px #ffffffb3;
+  border-radius: 10px;
 }
 .logo{
   position: absolute;

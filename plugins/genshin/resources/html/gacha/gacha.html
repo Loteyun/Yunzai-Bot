@@ -9,17 +9,17 @@
   </head>
   <body>
     <div class="container" id="container">
-      <div class="info-bg info-name">{{name}}</div>
       {{if nowFive < 4}}
+        <div class="info-bg info-name">{{name}}</div>
         <div class="info-bg info-count">{{info}}</div>
-      {{/if}}
-      {{if isWeapon}}
-        {{if bingWeapon}}
-          <div class="info-bg poor-info">定轨：{{bingWeapon}}</div>
-          <div class="info-bg poor-bing">命定值：{{lifeNum}}</div>
+        {{if isWeapon}}
+          {{if bingWeapon}}
+            <div class="info-bg poor-info">定轨：{{bingWeapon}}</div>
+            <div class="info-bg poor-bing">命定值：{{lifeNum}}</div>
+          {{/if}}
+        {{else if poolName}}
+          <div class="info-bg poor-info">{{poolName}}</div>
         {{/if}}
-      {{else if poolName}}
-      <div class="info-bg poor-info">{{poolName}}</div>
       {{/if}}
       <div class="list-box">
         {{each list}}
@@ -30,26 +30,36 @@
               <img class="item-bg-weapon" src="{{pluResPath}}img/gacha/items/bgWeapon.png"/>
               {{/if}}
             </div>
-            <img class="item-shadow" src="{{pluResPath}}img/gacha/items/shadow-{{$value.star}}.png"/>
+            <img class="item-shadow" src="{{pluResPath}}img/gacha/items/shadow-{{$value.star}}{{$value.rand ? '-' + $value.rand : ''}}.png"/>
             <img class="item-shadow2" src="{{pluResPath}}img/gacha/items/bg2.png"/>
             {{if $value.type=='weapon'}}
               <div class="item-weapon-box">
                 <img class="item-weapon-img" src="{{pluResPath}}img/gacha/{{$value.type}}/{{$value.name}}.png"/>
               </div>
             {{else}}
-              <div class="item-img-box">
+              <div class="item-img-box {{if $value.have && $value.type == 'role'}}fiveHave{{/if}}">
                 <img class="item-character-img" src="{{pluResPath}}img/gacha/character/{{$value.name}}.png"/>
               </div>
             {{/if}}
             
-            {{if $value.star==5 && nowFive < 4 }}
+            {{if $value.star==5 && nowFive < 4 && !$value.have }}
             <div class="times">「{{$value.num}}抽」</div>
             {{/if}}
-            {{if $value.element }}
-            <img class="item-element"  src="{{pluResPath}}img/gacha/items/{{$value.element}}.png"/>
-            {{/if}}
-            {{if $value.star }}
-            <img class="item-star" src="{{pluResPath}}img/gacha/items/s-{{$value.star}}.png"/>
+            {{if $value.have && $value.type == 'role'}}
+              {{if $value.star == 5}}
+                <img class="item-starGold" src="{{pluResPath}}img/gacha/items/星尘金.png" />
+                <img class="item-starlight" src="{{pluResPath}}img/gacha/items/星辉10.png" />
+              {{else}}
+                <img class="item-starGold" src="{{pluResPath}}img/gacha/items/星尘紫.png" />
+                <img class="item-starlight" src="{{pluResPath}}img/gacha/items/星辉2.png" />
+              {{/if}}
+            {{else}} 
+              {{if $value.element }}
+                <img class="item-element"  src="{{pluResPath}}img/gacha/items/{{$value.element}}.png"/>
+              {{/if}}
+              {{if $value.star }}
+                <img class="item-star" src="{{pluResPath}}img/gacha/items/s-{{$value.star}}.png"/>
+              {{/if}} 
             {{/if}}
           </div>
         {{/each}}

@@ -110,12 +110,14 @@ export class add extends plugin {
   }
 
   checkAuth () {
+    if (this.e.isMaster) return true
+
     let groupCfg = cfg.getGroup(this.group_id)
-    if (groupCfg.imgAddLimit == 2 && !this.e.isMaster) {
+    if (groupCfg.imgAddLimit == 2) {
       this.e.reply('暂无权限，只有主人才能操作')
       return false
     }
-    if (groupCfg.imgAddLimit == 1 && !this.e.isMaster) {
+    if (groupCfg.imgAddLimit == 1) {
       if (!Bot.gml.has(this.group_id)) {
         return false
       }
@@ -362,7 +364,7 @@ export class add extends plugin {
     if (isNaN(keyWord)) {
       num = keyWord.charAt(keyWord.length - 1)
 
-      if (!isNaN(num)) {
+      if (!isNaN(num) && !textArr[this.group_id].has(keyWord)) {
         keyWord = lodash.trimEnd(keyWord, num).trim()
         num--
       }
@@ -452,7 +454,7 @@ export class add extends plugin {
 
     this.initTextArr()
 
-    let keyWord = this.e.msg.replace(/#|＃|图片|表情|删除|全部/g, '')
+    let keyWord = this.e.toString().replace(/#|＃|图片|表情|删除|全部/g, '')
 
     keyWord = this.trimAlias(keyWord)
 
@@ -461,7 +463,7 @@ export class add extends plugin {
     if (isNaN(keyWord)) {
       num = keyWord.charAt(keyWord.length - 1)
 
-      if (!isNaN(num)) {
+      if (!isNaN(num) && !textArr[this.group_id].has(keyWord)) {
         keyWord = lodash.trimEnd(keyWord, num).trim()
         index = num - 1
       } else {
@@ -505,7 +507,21 @@ export class add extends plugin {
       }
     }
     if (!num) num = ''
-    await this.e.reply(`删除成功：${keyWord}${num}`)
+
+    let retMsg = [{ type: 'text', text: '删除成功：' }]
+    for (let msg of this.e.message) {
+      if (msg.type == 'text') {
+        msg.text = msg.text.replace(/#|＃|图片|表情|删除|全部/g, '')
+
+        if (!msg.text) continue
+      }
+      retMsg.push(msg)
+    }
+    if (num > 0) {
+      retMsg.push({ type: 'text', text: num })
+    }
+
+    await this.e.reply(retMsg)
 
     /** 删除图片 */
     tmp.forEach(item => {
@@ -575,10 +591,14 @@ export class add extends plugin {
       let keyWord = await this.keyWordTran(arr[i].key)
       if (!keyWord) continue
 
-      if (keyWord.type) {
-        msg.push(`${arr[i].num}.`, keyWord, '\n')
+      if (Array.isArray(keyWord)) {
+        keyWord.unshift(`${arr[i].num}、`)
+        keyWord.push('\n')
+        keyWord.forEach(v => msg.push(v))
+      } else if (keyWord.type) {
+        msg.push(`${arr[i].num}、`, keyWord, '\n')
       } else {
-        msg.push(`${arr[i].num}.${keyWord}\n`)
+        msg.push(`${arr[i].num}、${keyWord}\n`)
       }
       num++
     }
@@ -644,11 +664,11 @@ export class add extends plugin {
   /** 关键词转换成可发送消息 */
   async keyWordTran (msg) {
     /** 图片 */
-    if (msg.includes('{image:')) {
-      let tmp = msg.split('image:')
+    if (msg.includes('{image')) {
+      let tmp = msg.split('{image')
       if (tmp.length > 2) return false
 
-      let md5 = tmp[1].replace('}', '')
+      let md5 = tmp[1].replace(/}|_|:/g, '')
 
       msg = segment.image(`http://gchat.qpic.cn/gchatpic_new/0/0-0-${md5}/0`)
       msg.asface = true
@@ -661,6 +681,13 @@ export class add extends plugin {
         let name = member?.card ?? member?.nickname
         if (!name) continue
         msg = msg.replace(`{at:${qq}}`, `@${name}`)
+      }
+    } else if (msg.includes('{face')) {
+      let tmp = msg.match(/{face(:|_)(.+?)}/g)
+      msg = []
+      for (let face of tmp) {
+        let id = face.match(/\d+/g)
+        msg.push(segment.face(id))
       }
     }
 
