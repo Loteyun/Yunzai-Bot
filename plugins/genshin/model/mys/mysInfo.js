@@ -44,7 +44,7 @@ export default class MysInfo {
       type: ''
     }
 
-    this.auth = ['dailyNote', 'bbs_sign_info', 'bbs_sign_home', 'bbs_sign', 'ys_ledger']
+    this.auth = ['dailyNote', 'bbs_sign_info', 'bbs_sign_home', 'bbs_sign', 'ys_ledger', 'compute', 'avatarSkill']
   }
 
   static async init (e, api) {
