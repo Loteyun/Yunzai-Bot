@@ -17,7 +17,7 @@ export default class MysSign extends base {
     let mysSign = new MysSign(e)
 
     /** 获取个人ck */
-    let ck = gsCfg.getBingCkSingle(mysSign.userId)
+    let ck = gsCfg.getBingCkSingle(e.user_id)
 
     if (lodash.isEmpty(ck)) {
       e.reply('无法签到，请先#绑定cookie\n发送【cookie帮助】查看配置教程', false, { at: true })

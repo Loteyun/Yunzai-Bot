@@ -15,15 +15,26 @@ export default class Abyss extends base {
     if (this.e.msg.includes('上期') || this.e.msg.includes('往期')) {
       scheduleType = 2
     }
-    let res = await MysInfo.get(this.e, 'spiralAbyss', { schedule_type: scheduleType })
 
-    if (!res || res.retcode !== 0) return false
+    let ApiData = {
+      index: '',
+      spiralAbyss: { schedule_type: scheduleType }
+    }
 
-    if (res.data?.total_battle_times <= 0) {
+    /** 同步请求 */
+    this.e.apiSync = true
+
+    let res = await MysInfo.get(this.e, ApiData, '')
+
+    if (!res || res[0].retcode !== 0 || res[1].retcode !== 0) return false
+
+    let abyssData = res[1].data
+
+    if (abyssData?.total_battle_times <= 0) {
       await this.e.reply(`uid${this.e.uid}，暂无挑战数据。`)
       return false
     }
-    if (!res.data.damage_rank || res.data.damage_rank.length <= 0) {
+    if (!abyssData.damage_rank || abyssData.damage_rank.length <= 0) {
       await this.e.reply(`uid${this.e.uid}，数据还没更新，请稍后再试`)
       return false
     }
@@ -33,15 +44,13 @@ export default class Abyss extends base {
       name: this.e.sender.card,
       quality: 80,
       ...this.screenData,
-      ...this.abyssData(res)
+      ...this.abyssData(abyssData)
     }
 
     return data
   }
 
-  abyssData (res) {
-    let { data } = res
-
+  abyssData (data) {
     let startTime = moment.unix(data.start_time)
     let time = Number(startTime.month()) + 1
     if (startTime.date() >= 15) {
@@ -111,6 +120,10 @@ export default class Abyss extends base {
       index: '',
       spiralAbyss: { schedule_type: scheduleType }
     }
+
+    /** 同步请求 */
+    this.e.sync = true
+
     let res = await MysInfo.get(this.e, ApiData)
 
     if (!res || res[0].retcode !== 0 || res[1].retcode !== 0) return false

@@ -14,6 +14,9 @@ export default class MysApi {
     this.cookie = cookie
     this.server = this.getServer()
 
+    /** 5分钟缓存 */
+    this.cacheCd = 1800
+
     let op = {
       log: true,
       ...option
@@ -219,6 +222,6 @@ export default class MysApi {
 
   async cache (res, cacheKey) {
     if (!res || res.retcode !== 0) return
-    redis.setEx(cacheKey, 1800, JSON.stringify(res))
+    redis.setEx(cacheKey, this.cacheCd, JSON.stringify(res))
   }
 }

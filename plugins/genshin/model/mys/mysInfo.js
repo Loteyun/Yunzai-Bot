@@ -10,6 +10,8 @@ let bingCkUid = {}
 let bingCkQQ = {}
 let bingCkLtuid = {}
 
+let tmpCk = {}
+
 export default class MysInfo {
   /** redis key */
   static keyPre = 'Yz:genshin:mys:'
@@ -44,7 +46,7 @@ export default class MysInfo {
       type: ''
     }
 
-    this.auth = ['dailyNote', 'bbs_sign_info', 'bbs_sign_home', 'bbs_sign', 'ys_ledger', 'compute', 'avatarSkill']
+    this.auth = ['dailyNote', 'bbs_sign_info', 'bbs_sign_home', 'bbs_sign', 'ys_ledger', 'compute', 'avatarSkill', 'detail']
   }
 
   static async init (e, api) {
@@ -67,7 +69,10 @@ export default class MysInfo {
       mysInfo.uid = await MysInfo.getUid(e)
     }
 
-    if (!mysInfo.uid) return false
+    if (!mysInfo.uid) {
+      e.noTips = true
+      return false
+    }
 
     mysInfo.e.uid = mysInfo.uid
 
@@ -97,7 +102,7 @@ export default class MysInfo {
     if (at) {
       uid = await redis.get(`${MysInfo.key.qqUid}${at}`)
       if (uid) return String(uid)
-      e.reply('尚未绑定uid', false, { at })
+      if (e.noTips !== true) e.reply('尚未绑定uid', false, { at })
       return false
     }
 
@@ -123,7 +128,7 @@ export default class MysInfo {
     uid = matchUid(e.sender.card)
     if (uid) return String(uid)
 
-    e.reply('请先#绑定uid', false, { at })
+    if (e.noTips !== true) e.reply('请先#绑定uid', false, { at })
 
     return false
   }
@@ -138,14 +143,17 @@ export default class MysInfo {
 
     /** at用户 */
     if (at && (!bingCkQQ[at] || !bingCkQQ[at].uid)) {
-      e.reply('尚未绑定cookie', false, { at })
+      if (e.noTips !== true) e.reply('尚未绑定cookie', false, { at })
       return false
     }
 
     if (!e.user_id || !bingCkQQ[e.user_id] || !bingCkQQ[e.user_id].uid) {
-      e.reply(MysInfo.tips, false, { at })
+      if (e.noTips !== true) e.reply(MysInfo.tips, false, { at })
       return false
     }
+
+    /** 当前查询uid不是绑定的uid */
+    if (e.uid && e.uid != bingCkQQ[e.user_id].uid) return false
 
     return bingCkQQ[e.user_id].uid
   }
@@ -182,6 +190,9 @@ export default class MysInfo {
    * * `ys_ledger` 札记
    * * `compute` 养成计算器
    * * `avatarSkill` 角色技能
+   *
+   * @param e.apiSync 多个请求时是否同步请求
+   * @param e.noTips  是否回复提示，用于第一次调用才提示，后续不再提示
    */
   static async get (e, api, data = {}) {
     let mysInfo = await MysInfo.init(e, api)
@@ -194,10 +205,18 @@ export default class MysInfo {
     let res
     if (lodash.isObject(api)) {
       let all = []
-      lodash.forEach(api, (v, i) => {
-        all.push(mysApi.getData(i, v))
-      })
-      res = await Promise.all(all)
+      /** 同步请求 */
+      if (e.apiSync == true) {
+        res = []
+        for (let i in api) {
+          res.push(await mysApi.getData(i, api[i]))
+        }
+      } else {
+        lodash.forEach(api, (v, i) => {
+          all.push(mysApi.getData(i, v))
+        })
+        res = await Promise.all(all)
+      }
 
       for (let i in res) {
         res[i] = await mysInfo.checkCode(res[i], res[i].api)
@@ -215,6 +234,8 @@ export default class MysInfo {
   }
 
   async checkReply () {
+    if (this.e.noTips === true) return
+
     if (!this.uid) {
       this.e.reply('请先#绑定uid')
     }
@@ -226,9 +247,15 @@ export default class MysInfo {
         this.e.reply('公共ck查询次数已用完，暂无法查询新uid')
       }
     }
+
+    this.e.noTips = true
   }
 
   async getCookie () {
+    if (tmpCk[this.uid]) {
+      this.ckInfo = tmpCk[this.uid]
+      return this.ckInfo.ck
+    }
     if (this.ckInfo.ck) return this.ckInfo.ck
     // 使用用户uid绑定的ck
     await this.getBingCK() ||
@@ -238,6 +265,12 @@ export default class MysInfo {
     await this.getBingCKqq() ||
     // 使用公共ck
     await this.getPublicCK()
+
+    tmpCk[this.uid] = this.ckInfo
+
+    setTimeout(() => {
+      delete tmpCk[this.uid]
+    }, 1000 * 30)
 
     return this.ckInfo.ck
   }
@@ -401,7 +434,7 @@ export default class MysInfo {
 
   /** 加入公共ck池 */
   async addPubCk (ckList = '') {
-    let ckArr = GsCfg.getConfig('mys', 'pubCk')
+    let ckArr = GsCfg.getConfig('mys', 'pubCk') || []
 
     if (!ckList) {
       ckList = await redis.zRangeByScore(MysInfo.key.count, 0, 100)
@@ -606,13 +639,15 @@ export default class MysInfo {
         await redis.zAdd(MysInfo.key.count, { score: count.length, value: String(ck.ltuid) })
       }
     }
+
+    delete tmpCk[ck.uid]
   }
 
   async delBingCk (ck) {
     delete bingCkUid[ck.uid]
     delete bingCkQQ[ck.qq]
     delete bingCkLtuid[ck.ltuid]
-
+    delete tmpCk[ck.uid]
     this.detailDel(ck.ltuid)
   }
 

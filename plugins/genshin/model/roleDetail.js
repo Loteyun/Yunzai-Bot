@@ -21,28 +21,18 @@ export default class RoleDetail extends base {
   }
 
   async getDetail () {
-    /** 获取绑定uid */
-    let uid = await MysInfo.getUid(this.e)
-    if (!uid) return false
+    let character = await MysInfo.get(this.e, 'character')
+    let detail = await MysInfo.get(this.e, 'detail', { avatar_id: this.e.roleId })
 
-    /** 判断是否绑定了ck */
-    this.isBing = await MysInfo.checkUidBing(uid)
+    if (!character || character.retcode !== 0) return false
 
-    let param = { character: '' }
-    if (this.isBing && this.e.roleId != '20000000') {
-      param.detail = { avatar_id: this.e.roleId }
-    }
-
-    let res = await MysInfo.get(this.e, param)
-    if (!res || res[0].retcode !== 0) return false
-
-    let avatar = await this.getAvatar(res[0].data)
+    let avatar = await this.getAvatar(character.data)
     if (!avatar) return false
 
     /** 获取技能等级 */
     let skill = {}
-    if (res[1] && res[1].data) {
-      skill = this.getSkill(res[1].data, avatar)
+    if (detail && detail.data) {
+      skill = this.getSkill(detail.data, avatar)
     }
 
     if (!await this.checkImg(avatar.name)) return false
@@ -171,7 +161,7 @@ export default class RoleDetail extends base {
   }
 
   getSkill (data = {}, avatar) {
-    if (!this.isBing) return {}
+    // if (!this.isBing) return {}
 
     let skill = {
       id: avatar.id

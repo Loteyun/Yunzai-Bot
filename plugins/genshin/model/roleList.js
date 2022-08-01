@@ -20,13 +20,10 @@ export default class RoleList extends base {
   }
 
   async getData () {
-    /** 获取绑定uid */
-    let uid = await MysInfo.getUid(this.e)
-    if (!uid) return false
-
     let res = await MysInfo.get(this.e, 'character')
     if (!res || res.retcode !== 0) return false
 
+    let uid = this.e.uid
     let avatars = res.data.avatars
     if (avatars.length <= 0) return false
 
@@ -36,6 +33,7 @@ export default class RoleList extends base {
     let skill = []
     if (this.ck) {
       this.mysApi = new MysApi(uid, this.ck.ck, { log: false })
+      // this.mysApi.cacheCd = 1800
       skill = await this.getAllSkill(avatars)
     }
 
