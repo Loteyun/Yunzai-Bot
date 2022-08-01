@@ -149,6 +149,7 @@ export class gcLog extends plugin {
 
     if (!this.e.file || !/^[1-9][0-9]{8}(.*).xlsx$/ig.test(this.e.file?.name)) {
       await this.e.reply('请发送xlsx文件')
+      return true
     }
 
     await new ExportLog(this.e).logXlsx()
@@ -162,6 +163,7 @@ export class gcLog extends plugin {
 
     if (!this.e.file || !/^[1-9][0-9]{8}(.*).json/ig.test(this.e.file?.name)) {
       await this.e.reply('请发送Json文件')
+      return true
     }
 
     await new ExportLog(this.e).logJson()
