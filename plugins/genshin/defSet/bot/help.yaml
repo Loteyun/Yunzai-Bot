@@ -38,15 +38,18 @@
     - icon: 星辉
       title: 角色统计 武器统计
       desc: 按卡池统计抽卡数据
+    - icon: excel
+      title: 导出记录、导入记录
+      desc: 导出导入xlsx、json抽卡记录
     - icon: 纠缠之缘
-      title: 十连 十连2 定轨
+      title: 十连 十连2 定轨 十连武器 
       desc: 真实模拟抽卡
-    # - icon: wiki
-    #   title: '#刻晴图鉴 #护摩'
-    #   desc: 角色武器图鉴，感谢逍遥提供图片
-    - icon: 攻略
+    - icon: 浮世
+      title: '刻晴突破，刻晴素材'
+      desc: 米游社友人A的角色素材图
+    - icon: 刻晴
       title: 刻晴攻略
-      desc: 西风驿站攻略
+      desc: 西风驿站攻略图
     # - icon: 米游社
     #   title: '#公告 #资讯 #公告列表'
     #   desc: '原神米游社公告资讯'
