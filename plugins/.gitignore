@@ -10,6 +10,7 @@
 !other
 other/**
 !other/restart.js
+!other/sendLog.js
 
 !example
 example/**
