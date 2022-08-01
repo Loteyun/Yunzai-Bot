@@ -364,6 +364,10 @@ export default class MysInfo {
       return false
     }
 
+    if (!await redis.exists(MysInfo.key.count)) {
+      await this.initPubCk(true)
+    }
+
     /** 获取使用次数最少的ck */
     let list = await redis.zRangeByScore(MysInfo.key.count, 0, 27, true)
 
@@ -403,9 +407,9 @@ export default class MysInfo {
   }
 
   /** 初始化公共查询ck */
-  async initPubCk () {
+  async initPubCk (init = false) {
     /** 没配置每次都会初始化 */
-    if (!lodash.isEmpty(pubCk)) return
+    if (!lodash.isEmpty(pubCk) && init == false) return
 
     let ckList = await redis.zRangeByScore(MysInfo.key.count, 0, 100)
 
