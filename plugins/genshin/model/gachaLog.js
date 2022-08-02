@@ -58,8 +58,11 @@ export default class GachaLog extends base {
   async logFile () {
     let url = await this.downFile()
     if (!url) {
-      await this.e.reply('请先游戏里打开抽卡记录页面，再发送文件')
-      return
+      if (this.e?.file?.name.includes('output')) {
+        await this.e.reply('请先游戏里打开抽卡记录页面，再发送文件')
+        return true
+      }
+      return false
     }
     this.e.msg = url
     return this.logUrl()
