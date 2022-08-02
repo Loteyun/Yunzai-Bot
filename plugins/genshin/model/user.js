@@ -227,12 +227,19 @@ export default class User extends base {
   }
 
   /** 加载旧ck */
-  loadOldData () {
-    let file = './data/MysCookie/NoteCookie.json'
-    if (!fs.existsSync(file)) return
+  async loadOldData () {
+    let file = [
+      './data/MysCookie/NoteCookie.json',
+      './data/NoteCookie/NoteCookie.json'
+    ]
+    let json = file.find(v => fs.existsSync(v))
+    if (!json) return
 
-    let list = JSON.parse(fs.readFileSync(file, 'utf8'))
+    let list = JSON.parse(fs.readFileSync(json, 'utf8'))
     let arr = {}
+
+    logger.mark('加载用户ck...')
+
     lodash.forEach(list, (ck, qq) => {
       if (ck.qq) qq = ck.qq
 
@@ -267,7 +274,9 @@ export default class User extends base {
       gsCfg.saveBingCk(qq, ck)
     })
 
-    fs.unlinkSync(file)
+    logger.mark(`加载用户ck完成：${lodash.size(arr)}个`)
+
+    fs.unlinkSync(json)
   }
 
   async myCk () {
