@@ -11,6 +11,9 @@ export default class User extends base {
     this.model = 'bingCk'
     /** 绑定的uid */
     this.uidKey = `Yz:genshin:mys:qq-uid:${this.userId}`
+
+    /** 多角色uid */
+    this.allUid = []
   }
 
   async resetCk () {
@@ -58,7 +61,14 @@ export default class User extends base {
 
     logger.mark(`${this.e.logFnc} 保存cookie成功 [uid:${this.uid}] [ltuid:${this.ltuid}]`)
 
-    await this.e.reply(`绑定cookie成功,uid:${this.uid}`)
+    let uidMsg = `绑定cookie成功\n${this.region_name}：${this.uid}\n`
+    if (!lodash.isEmpty(this.allUid)) {
+      this.allUid.forEach(v => {
+        uidMsg += `${v.region_name}：${v.uid}\n`
+      })
+    }
+    await this.e.reply(uidMsg)
+
     let msg = '命令说明：\n【#体力】查询当前树脂'
     msg += '\n【#签到】原神米游社签到'
     msg += '\n【#原石】查看原石札记'
@@ -83,7 +93,12 @@ export default class User extends base {
     for (let val of res.data.list) {
       if (val.is_chosen) {
         this.uid = val.game_uid
-        break
+        this.region_name = val.region_name
+      } else {
+        this.allUid.push({
+          uid: val.game_uid,
+          region_name: val.region_name
+        })
       }
     }
 
@@ -112,6 +127,16 @@ export default class User extends base {
       isMain: true
     }
 
+    this.allUid.forEach((v) => {
+      ck[v.uid] = {
+        uid: v.uid,
+        qq: this.e.user_id,
+        ck: this.ck,
+        ltuid: this.ltuid,
+        isMain: false
+      }
+    })
+
     gsCfg.saveBingCk(this.e.user_id, ck)
 
     await new MysInfo(this.e).addBingCk(ck[this.uid])
@@ -136,6 +161,16 @@ export default class User extends base {
         }
       }
     }
+
+    /** 删除多角色ck */
+    let delLtuid = delCk.ltuid
+    for (let i in ck) {
+      if (ck[i].ltuid == delLtuid) {
+        await new MysInfo(this.e).delBingCk(ck[i])
+        delete ck[i]
+      }
+    }
+
     /** 将下一个ck设为主ck */
     if (lodash.size(ck) >= 1) {
       for (let i in ck) {
@@ -230,7 +265,8 @@ export default class User extends base {
   async loadOldData () {
     let file = [
       './data/MysCookie/NoteCookie.json',
-      './data/NoteCookie/NoteCookie.json'
+      './data/NoteCookie/NoteCookie.json',
+      './data/NoteCookie.json'
     ]
     let json = file.find(v => fs.existsSync(v))
     if (!json) return
