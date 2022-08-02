@@ -65,7 +65,7 @@ export class sendLog extends plugin {
     } else {
       log = lodash.slice(log, (Number(this.lineNum) + 1) * -1)
     }
-
+    log = log.reverse()
     let tmp = []
     log.forEach(v => {
       if (!v) return

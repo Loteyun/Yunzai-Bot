@@ -38,7 +38,8 @@ export class material extends plugin {
 
   /** #刻晴攻略 */
   async material () {
-    let role = gsCfg.getRole(this.e.msg, '突破|材料|素材')
+    let isUpdate = !!this.e.msg.includes('更新')
+    let role = gsCfg.getRole(this.e.msg, '突破|材料|素材|更新')
 
     if (!role) return false
 
@@ -50,7 +51,7 @@ export class material extends plugin {
 
     this.imgPath = `${this.path}/${role.name}.jpg`
 
-    if (fs.existsSync(this.imgPath)) {
+    if (fs.existsSync(this.imgPath) && !isUpdate) {
       await this.e.reply(segment.image(`file://${this.imgPath}`))
       return
     }
