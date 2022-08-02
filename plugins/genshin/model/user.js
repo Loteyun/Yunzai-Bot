@@ -89,6 +89,11 @@ export default class User extends base {
       return false
     }
 
+    if (!res.data.list || res.data.list.length <= 0) {
+      this.checkMsg = '米游社账号未绑定原神角色！'
+      return false
+    }
+
     /** 米游社默认展示的角色 */
     for (let val of res.data.list) {
       if (val.is_chosen) {
@@ -104,6 +109,8 @@ export default class User extends base {
 
     if (!this.uid && res.data?.list?.length > 0) {
       this.uid = res.data.list[0].game_uid
+      this.region_name = res.data.list[0].region_name
+      if (this.allUid[0].uid == this.uid) delete this.allUid[0]
     }
 
     return this.uid
@@ -128,6 +135,7 @@ export default class User extends base {
     }
 
     this.allUid.forEach((v) => {
+      if (!v.uid) return
       ck[v.uid] = {
         uid: v.uid,
         qq: this.e.user_id,
@@ -135,6 +143,7 @@ export default class User extends base {
         ltuid: this.ltuid,
         isMain: false
       }
+      new MysInfo(this.e).addBingCk(ck[v.uid])
     })
 
     gsCfg.saveBingCk(this.e.user_id, ck)
