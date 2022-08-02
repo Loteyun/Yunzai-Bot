@@ -64,7 +64,7 @@ export default class ExportLog extends base {
 
     logger.mark(`${this.e.logFnc} 导出成功${this.uid}.json`)
 
-    this.e.reply(`导出成功：${this.uid}.json\n请接收文件`)
+    this.e.reply(`导出成功：${this.uid}.json，共${list.length}条 \n请接收文件`)
 
     await this.e.friend.sendFile(saveFile).catch((err) => {
       logger.error(`${this.e.logFnc} 发送文件失败 ${JSON.stringify(err)}`)
@@ -98,14 +98,15 @@ export default class ExportLog extends base {
 
     logger.mark(`${this.e.logFnc} 导出成功${this.uid}.xlsx`)
 
-    this.e.reply(`文件${this.uid}.xlsx上传中，请耐心等待...`)
+    this.e.reply(`记录文件${this.uid}.xlsx上传中，请耐心等待...`)
 
     res = await this.e.friend.sendFile(saveFile).catch((err) => {
       this.e.reply(`发送文件${this.uid}.xlsx失败，请稍后再试`)
       logger.error(`${this.e.logFnc} 发送文件失败 ${JSON.stringify(err)}`)
     })
 
-    if (res) this.e.reply('上传成功，请接收文件')
+    let line = xlsxData[xlsxData.length - 1].data.length - 1
+    if (res) this.e.reply(`${this.uid}.xlsx上传成功，共${line}条\n请接收文件`)
 
     /** 删除文件 */
     fs.unlink(saveFile, () => {})
