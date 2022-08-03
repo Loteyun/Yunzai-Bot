@@ -220,13 +220,13 @@ export default class MysInfo {
 
       for (let i in res) {
         res[i] = await mysInfo.checkCode(res[i], res[i].api)
-        if (res[i].retcode === 0) continue
+
+        if (res[i]?.retcode === 0) continue
+
         break
       }
     } else {
       res = await mysApi.getData(api, data)
-      if (!res) return false
-
       res = await mysInfo.checkCode(res, api)
     }
 
@@ -475,6 +475,11 @@ export default class MysInfo {
   }
 
   async checkCode (res, type) {
+    if (!res) {
+      this.e.reply('米游社接口请求失败，暂时无法查询')
+      return false
+    }
+
     res.retcode = Number(res.retcode)
     if (type == 'bbs_sign') {
       if ([-5003].includes(res.retcode)) {

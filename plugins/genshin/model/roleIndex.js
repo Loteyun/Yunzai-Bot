@@ -10,11 +10,18 @@ export default class RoleIndex extends base {
     this.other = gsCfg.getdefSet('role', 'other')
     this.wother = gsCfg.getdefSet('weapon', 'other')
 
-    this.areaName = {
-      3: '雪山',
-      6: '层岩巨渊',
-      7: '层岩地下'
+    this.area = {
+      蒙德: 1,
+      璃月: 2,
+      雪山: 3,
+      稻妻: 4,
+      渊下宫: 5,
+      层岩巨渊: 6,
+      层岩地下: 7,
+      须弥: 8
     }
+
+    this.areaName = lodash.invert(this.area)
 
     this.headIndexStyle = `<style> .head_box { background: url(${this.screenData.pluResPath}img/roleIndex/namecard/${lodash.random(1, 7)}.png) #f5f5f5; background-position-x: 30px; background-repeat: no-repeat; border-radius: 15px; font-family: tttgbnumber; padding: 10px 20px; position: relative; background-size: auto 101%; }</style>`
   }
@@ -47,12 +54,6 @@ export default class RoleIndex extends base {
   }
 
   dealData (data) {
-    let areaName = {
-      3: '雪山',
-      6: '层岩巨渊',
-      7: '层岩地下'
-    }
-
     let [resIndex, resAbyss, resDetail] = data
 
     let avatars = resDetail.avatars || []
@@ -128,50 +129,31 @@ export default class RoleIndex extends base {
 
     // 尘歌壶
     let homesLevel = 0
-    let homesItem = 0
+    // let homesItem = 0
     if (resIndex.homes && resIndex.homes.length > 0) {
       homesLevel = resIndex.homes[0].level
-      homesItem = resIndex.homes[0].item_num
+      // homesItem = resIndex.homes[0].item_num
     }
 
-    resIndex.world_explorations = lodash.orderBy(resIndex.world_explorations, ['id'], ['desc'])
+    let worldExplorations = lodash.keyBy(resIndex.world_explorations, 'id')
 
     let explor = []
     let explor2 = []
-    for (let val of resIndex.world_explorations) {
-      val.name = areaName[val.id] ? areaName[val.id] : lodash.truncate(val.name, { length: 6 })
 
-      let tmp = { lable: val.name, num: `${val.exploration_percentage / 10}%` }
+    let expArr = ['须弥', '层岩巨渊', '渊下宫', '稻妻']
+    let expArr2 = ['雪山', '璃月', '蒙德']
 
-      if ([6, 5, 4, 3].includes(val.id)) {
-        explor.push(tmp)
-      }
-      if ([1, 2].includes(val.id)) {
-        explor2.push(tmp)
-      }
+    for (let val of expArr) {
+      let tmp = { lable: val, num: `${(worldExplorations[this.area[val]]?.exploration_percentage ?? 0) / 10}%` }
+      explor.push(tmp)
     }
 
-    if (!lodash.find(explor, (o) => {
-      return o.lable == '渊下宫'
-    })) {
-      explor.unshift({ lable: '渊下宫', num: '0%' })
-    }
-    // 没有层岩强制补上
-    if (!lodash.find(explor, (o) => {
-      return o.lable == '层岩巨渊'
-    })) {
-      explor.unshift({ lable: '层岩巨渊', num: '0%' })
-    }
-    if (!lodash.find(explor, (o) => {
-      return o.lable == '雪山'
-    })) {
-      explor.unshift({ lable: '雪山', num: '0%' })
+    for (let val of expArr2) {
+      let tmp = { lable: val, num: `${(worldExplorations[this.area[val]]?.exploration_percentage ?? 0) / 10}%` }
+      explor2.push(tmp)
     }
 
-    explor2 = explor2.concat([
-      { lable: '家园等级', num: homesLevel },
-      { lable: '获得摆设', num: homesItem }
-    ])
+    explor2.push({ lable: '家园等级', num: homesLevel })
 
     line.push(explor)
     line.push(explor2)

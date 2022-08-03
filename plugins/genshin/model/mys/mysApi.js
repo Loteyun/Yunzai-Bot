@@ -15,7 +15,7 @@ export default class MysApi {
     this.server = this.getServer()
 
     /** 5分钟缓存 */
-    this.cacheCd = 1800
+    this.cacheCd = 300
 
     let op = {
       log: true,
@@ -184,6 +184,7 @@ export default class MysApi {
     return {
       'x-rpc-app_version': '2.33.1',
       'x-rpc-client_type': 5,
+      'User-Agent': 'miHoYoBBS/2.33.1',
       DS: this.getDs(query, body)
     }
   }

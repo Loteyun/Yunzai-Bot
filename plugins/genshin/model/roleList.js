@@ -33,7 +33,7 @@ export default class RoleList extends base {
     let skill = []
     if (this.ck) {
       this.mysApi = new MysApi(uid, this.ck.ck, { log: false })
-      // this.mysApi.cacheCd = 1800
+      this.mysApi.cacheCd = 1800
       skill = await this.getAllSkill(avatars)
     }
 
@@ -129,8 +129,9 @@ export default class RoleList extends base {
 
     // 四星五星
     let star = 0
-    if (/(四|4)/.test(this.e.msg)) star = 4
-    if (/(五|5)/.test(this.e.msg)) star = 5
+    let msg = this.e.msg.replace(this.e.uid, '')
+    if (/(四|4)/.test(msg)) star = 4
+    if (/(五|5)/.test(msg)) star = 5
 
     // 天赋等级背景
     const talentLvMap = '0,1,1,1,2,2,3,3,3,4,5'.split(',')
