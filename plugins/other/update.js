@@ -197,7 +197,7 @@ export class update extends plugin {
     new Restart(this.e).restart()
   }
 
-  async getLog (plugin) {
+  async getLog (plugin = '') {
     let cm = 'git log  -50 --oneline --no-merges --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"'
     if (plugin) {
       cm = `cd ./plugins/${plugin}/ && git log -50 --oneline --no-merges --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"`
@@ -216,7 +216,7 @@ export class update extends plugin {
     }
 
     if (log.length <= 0) return ''
-    console.log(log)
+
     let end = ''
     if (!plugin) {
       end = '更多详细信息，请前往github查看\nhttps://github.com/Le-niao/Yunzai-Bot/commits/main'
