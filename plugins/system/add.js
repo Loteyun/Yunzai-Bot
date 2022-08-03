@@ -54,7 +54,7 @@ export class add extends plugin {
 
   async accept () {
     /** 处理消息 */
-    if (this.e.atBot && this.e.msg.includes('添加') && !this.e.msg.includes('#')) {
+    if (this.e.atBot && this.e?.msg.includes('添加') && !this.e?.msg.includes('#')) {
       this.e.msg = '#' + this.e.msg
     }
   }
@@ -391,6 +391,11 @@ export class add extends plugin {
       }
     }
 
+    msg.forEach(m => {
+      /** 去除回复@@ */
+      if (m?.type == 'at') { delete m.text }
+    })
+
     logger.mark(`[发送表情]${this.e.logText} ${keyWord}`)
     this.e.reply(msg)
 
@@ -596,15 +601,16 @@ export class add extends plugin {
         keyWord.push('\n')
         keyWord.forEach(v => msg.push(v))
       } else if (keyWord.type) {
-        msg.push(`${arr[i].num}、`, keyWord, '\n')
+        msg.push(`\n${arr[i].num}、`, keyWord, '\n\n')
       } else {
         msg.push(`${arr[i].num}、${keyWord}\n`)
       }
       num++
     }
 
+    let end = ''
     if (type == 'list' && count > 100) {
-      msg.push(`\n更多内容请翻页查看\n如：#表情列表${Number(page) + 1}`)
+      end = `更多内容请翻页查看\n如：#表情列表${Number(page) + 1}`
     }
 
     let title = `表情列表，第${page}页，共${count}条`
@@ -612,12 +618,12 @@ export class add extends plugin {
       title = `表情${search}，${count}条`
     }
 
-    let forwardMsg = await this.makeForwardMsg(Bot.uin, title, msg)
+    let forwardMsg = await this.makeForwardMsg(Bot.uin, title, msg, end)
 
     this.e.reply(forwardMsg)
   }
 
-  async makeForwardMsg (qq, title, msg) {
+  async makeForwardMsg (qq, title, msg, end = '') {
     let nickname = Bot.nickname
     if (this.e.isGroup) {
       let info = await Bot.getGroupMemberInfo(this.e.group_id, qq)
@@ -632,12 +638,18 @@ export class add extends plugin {
       {
         ...userInfo,
         message: title
-      },
-      {
-        ...userInfo,
-        message: msg
       }
     ]
+
+    let msgArr = lodash.chunk(msg, 20)
+    msgArr.forEach(v => {
+      v[v.length - 1] = lodash.trim(v[v.length - 1], '\n')
+      forwardMsg.push({ ...userInfo, message: v })
+    })
+
+    if (end) {
+      forwardMsg.push({ ...userInfo, message: end })
+    }
 
     /** 制作转发内容 */
     if (this.e.isGroup) {
