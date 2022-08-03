@@ -2,7 +2,7 @@ version: "3.9"
 services:
   yunzai-bot:
     container_name: yunzai-bot
-    # build: ./docker # 使用 Dockerfile 本地构建，v3.0尚在测试阶段
+    build: ./docker # 使用 Dockerfile 本地构建
     image: swr.cn-south-1.myhuaweicloud.com/sirly/yunzai-bot:dev  # 使用云端镜像
     # image: sirly/yunzai-bot:dev # Docker Hub 
     restart: always

@@ -15,8 +15,8 @@ jobs:
       - name: install dependencies
         run: sudo apt install docker-compose
 
-      - name: pull docker images
-        run: cd docker && docker-compose up -d
+      - name: build docker images
+        run: docker-compose up -d --build
 
       - name: use default config
         run: docker cp docker/qq.yaml yunzai-bot:/app/Yunzai-Bot/config/config
