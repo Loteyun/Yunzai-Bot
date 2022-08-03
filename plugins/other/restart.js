@@ -4,8 +4,8 @@ import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const { exec } = require('child_process')
 
-export class other extends plugin {
-  constructor () {
+export class Restart extends plugin {
+  constructor (e = '') {
     super({
       name: '重启',
       dsc: '#重启',
@@ -18,6 +18,8 @@ export class other extends plugin {
         }
       ]
     })
+
+    if (e) this.e = e
 
     this.key = 'Yz:restart'
   }
@@ -54,7 +56,7 @@ export class other extends plugin {
         await this.e.reply('当前为前台运行，重启将转为后台...')
       }
 
-      exec(cm, (error, stdout, stderr) => {
+      exec(cm, { windowsHide: true }, (error, stdout, stderr) => {
         if (error) {
           redis.del(this.key)
           this.e.reply(`操作失败！\n${error.stack}`)
