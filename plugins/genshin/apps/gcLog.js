@@ -70,11 +70,11 @@ export class gcLog extends plugin {
         this.e.msg = '#txt日志文件导入记录'
         if (name.includes('output')) return true
       }
-      if (/^[1-9][0-9]{8}(.*).xlsx$/ig.test(name)) {
+      if (/(.*)[1-9][0-9]{8}(.*).xlsx$/ig.test(name)) {
         this.e.msg = '#xlsx文件导入记录'
         return true
       }
-      if (/^[1-9][0-9]{8}(.*).json/ig.test(name)) {
+      if (/(.*)[1-9][0-9]{8}(.*).json/ig.test(name)) {
         this.e.msg = '#json文件导入记录'
         return true
       }
