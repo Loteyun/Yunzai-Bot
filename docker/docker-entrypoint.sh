@@ -49,7 +49,7 @@ if [ -d $MIAO_PLUGIN_PATH"/.git" ]; then
 
     echo -e "\n ================ \n ${Info} ${GreenBG} 更新 喵喵插件 运行依赖 ${Font} \n ================ \n"
 
-    pnpm install image-size
+    pnpm add image-size -w
 
     echo -e "\n ================ \n ${Version} ${BlueBG} 喵喵插件版本信息 ${Font} \n ================ \n"
 
@@ -72,7 +72,7 @@ if [ -d $XIAOYAO_CVS_PATH"/.git" ]; then
 
     echo -e "\n ================ \n ${Info} ${GreenBG} 更新 xiaoyao-cvs 插件运行依赖 ${Font} \n ================ \n"
 
-    pnpm install promise-retry superagent
+    pnpm add promise-retry superagent -w
 
     echo -e "\n ================ \n ${Version} ${BlueBG} xiaoyao-cvs 插件版本信息 ${Font} \n ================ \n"
 

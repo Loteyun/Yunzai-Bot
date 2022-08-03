@@ -21,7 +21,7 @@ export class gcLog extends plugin {
           fnc: 'logUrl'
         },
         {
-          reg: '#日志文件导入记录',
+          reg: '#txt日志文件导入记录',
           fnc: 'logFile'
         },
         {
@@ -66,9 +66,9 @@ export class gcLog extends plugin {
   accept () {
     if (this.e.file) {
       let name = this.e.file?.name
-      if (name.includes('txt') && name.includes('output')) {
-        this.e.msg = '#日志文件导入记录'
-        return true
+      if (name.includes('txt')) {
+        this.e.msg = '#txt日志文件导入记录'
+        if (name.includes('output')) return true
       }
       if (/^[1-9][0-9]{8}(.*).xlsx$/ig.test(name)) {
         this.e.msg = '#xlsx文件导入记录'
@@ -111,6 +111,9 @@ export class gcLog extends plugin {
     }
 
     let data = await new GachaLog(this.e).logFile()
+    if (!data) return false
+
+    if (typeof data != 'object') return
 
     let img = await puppeteer.screenshot('gachaLog', data)
     if (img) await this.reply(img)
