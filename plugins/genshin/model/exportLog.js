@@ -259,7 +259,7 @@ export default class ExportLog extends base {
 
   dealXlsx (list) {
     /** 必要字段 */
-    let reqField = ['uigf_gacha_type', 'gacha_type', 'id', 'item_type', 'name', 'time']
+    let reqField = ['uigf_gacha_type', 'gacha_type', 'item_type', 'name', 'time']
     /** 不是必要字段 */
     let noReqField = ['uid', 'count', 'item_id', 'lang', 'rank_type']
 
@@ -277,7 +277,7 @@ export default class ExportLog extends base {
     }
 
     /** 倒序 */
-    if (list[1][field.id] < list[list.length - 1][field.id]) {
+    if (moment(list[1][field.time]).format('x') < moment(list[list.length - 1][field.time]).format('x')) {
       list = list.reverse()
     }
 
@@ -357,7 +357,7 @@ export default class ExportLog extends base {
     let data = {}
 
     /** 必要字段 */
-    let reqField = ['gacha_type', 'id', 'item_type', 'name', 'time']
+    let reqField = ['gacha_type', 'item_type', 'name', 'time']
 
     for (let v of reqField) {
       if (!list[0][v]) {
@@ -367,7 +367,7 @@ export default class ExportLog extends base {
     }
 
     /** 倒序 */
-    if (list[0].id < list[list.length - 1].id) {
+    if (moment(list[0].time).format('x') < moment(list[list.length - 1].time).format('x')) {
       list = list.reverse()
     }
 
