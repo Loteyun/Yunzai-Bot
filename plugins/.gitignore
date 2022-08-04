@@ -12,6 +12,7 @@ other/**
 !other/restart.js
 !other/sendLog.js
 !other/update.js
+!other/setPubCk.js
 
 !example
 example/**
