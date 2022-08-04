@@ -391,10 +391,12 @@ export class add extends plugin {
       }
     }
 
-    msg.forEach(m => {
-      /** 去除回复@@ */
-      if (m?.type == 'at') { delete m.text }
-    })
+    if (Array.isArray(msg)) {
+      msg.forEach(m => {
+        /** 去除回复@@ */
+        if (m?.type == 'at') { delete m.text }
+      })
+    }
 
     logger.mark(`[发送表情]${this.e.logText} ${keyWord}`)
     this.e.reply(msg)
