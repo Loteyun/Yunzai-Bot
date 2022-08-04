@@ -27,14 +27,14 @@ export class update extends plugin {
           permission: 'master'
         },
         {
-          reg: '^#全部更新',
+          reg: '^#全部更新$',
           fnc: 'updateAll',
           permission: 'master'
         }
       ]
     })
 
-    this.name = 'Yunzai-Bot'
+    this.typeName = 'Yunzai-Bot'
   }
 
   async update () {
@@ -42,6 +42,8 @@ export class update extends plugin {
       await this.reply('已有命令更新中..请勿重复操作')
       return
     }
+
+    if (/详细|详情|面板|面版/.test(this.e.msg)) return false
 
     /** 获取插件 */
     let plugin = this.getPlugin()
@@ -56,7 +58,7 @@ export class update extends plugin {
 
     /** 是否需要重启 */
     if (this.isUp) {
-      await this.reply('即将执行重启，以应用更新')
+      // await this.reply('即将执行重启，以应用更新')
       setTimeout(() => this.restart(), 2000)
     }
   }
@@ -81,7 +83,7 @@ export class update extends plugin {
 
     if (!fs.existsSync(path)) return false
 
-    this.name = plugin
+    this.typeName = plugin
     return plugin
   }
 
@@ -110,12 +112,15 @@ export class update extends plugin {
 
     this.oldCommitId = await this.getcommitId(plugin)
 
-    await this.reply(`开始${type}${this.name}`)
+    logger.mark(`${this.e.logFnc} 开始${type}：${this.typeName}`)
+
+    await this.reply(`开始#${type}${this.typeName}`)
     uping = true
     let ret = await this.execSync(cm)
     uping = false
 
     if (ret.error) {
+      logger.mark(`${this.e.logFnc} 更新失败：${this.typeName}`)
       this.gitErr(ret.error, ret.stdout)
       return false
     }
@@ -123,13 +128,15 @@ export class update extends plugin {
     let commitId = await this.getcommitId(plugin)
 
     if (ret.stdout.includes('Already up')) {
-      await this.reply(`${this.name}已经是最新版本：${commitId}`)
+      await this.reply(`${this.typeName}已经是最新\n版本：${commitId}`)
     } else {
-      await this.reply(`${this.name}更新成功：${commitId}`)
+      await this.reply(`${this.typeName}\n更新成功：${commitId}`)
       this.isUp = true
       let log = await this.getLog(plugin)
       await this.reply(log)
     }
+
+    logger.mark(`${this.e.logFnc} 更新成功：${commitId}`)
 
     return true
   }
@@ -169,7 +176,7 @@ export class update extends plugin {
     }
 
     if (stdout.includes('CONFLICT')) {
-      await this.reply([msg + '，存在冲突', errMsg, stdout])
+      await this.reply([msg + '，存在冲突\n', errMsg, stdout, '\n请解决冲突后再更新，或者执行#强制更新，放弃本地修改'])
       return
     }
 
@@ -188,7 +195,7 @@ export class update extends plugin {
     }
 
     if (this.isUp) {
-      await this.reply('即将执行重启，以应用更新')
+      // await this.reply('即将执行重启，以应用更新')
       setTimeout(() => this.restart(), 2000)
     }
   }
@@ -198,9 +205,9 @@ export class update extends plugin {
   }
 
   async getLog (plugin = '') {
-    let cm = 'git log  -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"'
+    let cm = 'git log  -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
     if (plugin) {
-      cm = `cd ./plugins/${plugin}/ && git log -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"`
+      cm = `cd ./plugins/${plugin}/ && git log -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"`
     }
 
     let logAll = await execSync(cm, { encoding: 'utf-8' })
@@ -212,8 +219,11 @@ export class update extends plugin {
     for (let str of logAll) {
       str = str.split('||')
       if (str[0] == this.oldCommitId) break
-      log.push(str[1] + '\n\n')
+      if (str[1].includes('Merge branch')) continue
+      log.push(str[1])
     }
+    let line = log.length
+    log = log.join('\n\n')
 
     if (log.length <= 0) return ''
 
@@ -222,7 +232,7 @@ export class update extends plugin {
       end = '更多详细信息，请前往github查看\nhttps://github.com/Le-niao/Yunzai-Bot/commits/main'
     }
 
-    log = await this.makeForwardMsg(`${plugin}更新日志，共${log.length}条`, log, end)
+    log = await this.makeForwardMsg(`${plugin || 'Yunzai-Bot'}更新日志，共${line}条`, log, end)
 
     return log
   }
