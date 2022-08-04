@@ -18,6 +18,10 @@ export class update extends plugin {
       priority: 4000,
       rule: [
         {
+          reg: '^#更新日志$',
+          fnc: 'updateLog'
+        },
+        {
           reg: '^#(强制)*更新(.*)',
           fnc: 'update',
           permission: 'master'
@@ -26,10 +30,6 @@ export class update extends plugin {
           reg: '^#全部更新',
           fnc: 'updateAll',
           permission: 'master'
-        },
-        {
-          reg: '^#更新日志',
-          fnc: 'updateLog'
         }
       ]
     })
@@ -198,9 +198,9 @@ export class update extends plugin {
   }
 
   async getLog (plugin = '') {
-    let cm = 'git log  -50 --oneline --no-merges --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"'
+    let cm = 'git log  -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"'
     if (plugin) {
-      cm = `cd ./plugins/${plugin}/ && git log -50 --oneline --no-merges --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"`
+      cm = `cd ./plugins/${plugin}/ && git log -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M:%S"`
     }
 
     let logAll = await execSync(cm, { encoding: 'utf-8' })
@@ -212,7 +212,7 @@ export class update extends plugin {
     for (let str of logAll) {
       str = str.split('||')
       if (str[0] == this.oldCommitId) break
-      log.push(str[1] + '\n')
+      log.push(str[1] + '\n\n')
     }
 
     if (log.length <= 0) return ''

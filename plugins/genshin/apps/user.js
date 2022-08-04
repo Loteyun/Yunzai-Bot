@@ -34,7 +34,7 @@ export class user extends plugin {
           fnc: 'myCk'
         },
         {
-          reg: '#?删除(ck|cookie)',
+          reg: '#?删除(ck|cookie)$',
           fnc: 'delCk'
         },
         // {

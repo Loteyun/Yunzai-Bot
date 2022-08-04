@@ -61,13 +61,13 @@ export default class User extends base {
 
     logger.mark(`${this.e.logFnc} 保存cookie成功 [uid:${this.uid}] [ltuid:${this.ltuid}]`)
 
-    let uidMsg = `绑定cookie成功\n${this.region_name}：${this.uid}\n`
+    let uidMsg = [`绑定cookie成功\n${this.region_name}：${this.uid}`]
     if (!lodash.isEmpty(this.allUid)) {
       this.allUid.forEach(v => {
-        uidMsg += `${v.region_name}：${v.uid}\n`
+        uidMsg.push(`${v.region_name}：${v.uid}`)
       })
     }
-    await this.e.reply(uidMsg)
+    await this.e.reply(uidMsg.join('\n'))
 
     let msg = '命令说明：\n【#体力】查询当前树脂'
     msg += '\n【#签到】原神米游社签到'
