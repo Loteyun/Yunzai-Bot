@@ -80,7 +80,10 @@ export default class MysSign extends base {
       }
     }
 
-    return false
+    return {
+      retcode: -1000,
+      msg: '签到失败：' + this.signMsg
+    }
   }
 
   // 缓存签到奖励
@@ -132,6 +135,7 @@ export default class MysSign extends base {
 
     this.signApi = true
     let sign = await this.mysApi.getData('bbs_sign')
+    this.signMsg = sign?.message ?? '未知错误'
 
     /** 签到成功 */
     if (sign.retcode === 0 || sign.retcode === -5003) {
