@@ -174,10 +174,10 @@ export default class MysApi {
   getHeaders (query = '', body = '', sign = false) {
     if (sign) {
       return {
-        'x-rpc-app_version': '2.3.0',
+        'x-rpc-app_version': '2.28.1',
         'x-rpc-client_type': 5,
         'x-rpc-device_id': this.getGuid(),
-        'User-Agent': ' miHoYoBBS/2.3.0',
+        'User-Agent': ' miHoYoBBS/2.28.1',
         DS: this.getDsSign()
       }
     }
@@ -202,7 +202,8 @@ export default class MysApi {
 
   /** 签到ds */
   getDsSign () {
-    const n = 'h8w582wxwgqvahcdkpvdhbh2w9casgfl'
+    /** @Womsxd */
+    const n = 'ulInCDohgEs557j0VsPDYnQaaz6KJcv5'
     const t = Math.round(new Date().getTime() / 1000)
     const r = lodash.sampleSize('abcdefghijklmnopqrstuvwxyz0123456789', 6).join('')
     const DS = md5(`salt=${n}&t=${t}&r=${r}`)
