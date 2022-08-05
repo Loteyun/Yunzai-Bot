@@ -16,16 +16,23 @@ export class disPri extends plugin {
 
     if (this.e.isMaster) return
 
-    /** 绑定ck，抽卡链接 */
-    if (this.e.raw_message && !this.e.raw_message.match(/(.*)(ltoken|_MHYUUID|authkey=)(.*)/g)) {
-      this.sendTips()
-      return 'return'
+    /** 发送日志文件，xlsx，json */
+    if (this.e.file) {
+      if (!/(.*)\.txt|xlsx|json/ig.test(this.e.file?.name)) {
+        this.sendTips()
+        return 'return'
+      } else {
+        return false
+      }
     }
 
-    /** 发送日志文件，xlsx，json */
-    if (this.e.file && !this.e.file?.name?.includes(['txt', 'xlsx', 'json'])) {
-      this.sendTips()
-      return 'return'
+    /** 绑定ck，抽卡链接 */
+    let wordReg = /(.*)(ltoken|_MHYUUID|authkey=)(.*)|导出记录(json)*|(记录|安卓|苹果|ck|cookie|体力)帮助|^帮助$/g
+    if (this.e.raw_message) {
+      if (!new RegExp(wordReg).test(this.e.raw_message)) {
+        this.sendTips()
+        return 'return'
+      }
     }
   }
 
