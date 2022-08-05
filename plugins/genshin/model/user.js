@@ -72,8 +72,12 @@ export default class User extends base {
     let msg = '命令说明：\n【#体力】查询当前树脂'
     msg += '\n【#签到】原神米游社签到'
     msg += '\n【#原石】查看原石札记'
-    msg += '\n【#原石统计】统计原石数据'
-    msg += '\n【#练度统计】可以查看更多数据'
+    msg += '\n【#原石统计】原石统计数据'
+    msg += '\n【#练度统计】技能统计列表'
+    msg += '\n【#uid】当前绑定ck uid列表'
+    msg += '\n【#我的ck】查看当前绑定ck'
+    msg += '\n【#删除ck】删除当前绑定ck'
+    msg += '\n【备注】支持绑定多个ck'
     await this.e.reply(msg)
   }
 
