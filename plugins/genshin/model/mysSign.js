@@ -25,10 +25,17 @@ export default class MysSign extends base {
     }
 
     let uids = lodash.map(ck, 'uid')
+
+    let msg = []
     for (let uid of uids) {
       let res = await mysSign.doSign(ck[uid])
-      await e.reply(res.msg)
+      await common.sleep(100)
+      if (res) msg.push(res.msg)
     }
+
+    msg = msg.join('\n\n')
+
+    await e.reply(msg)
   }
 
   async doSign (ck, isLog = true) {
