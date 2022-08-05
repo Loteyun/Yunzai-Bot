@@ -174,10 +174,12 @@ export default class MysApi {
   getHeaders (query = '', body = '', sign = false) {
     if (sign) {
       return {
-        'x-rpc-app_version': '2.28.1',
+        'x-rpc-app_version': '2.34.1',
         'x-rpc-client_type': 5,
         'x-rpc-device_id': this.getGuid(),
-        'User-Agent': ' miHoYoBBS/2.28.1',
+        'User-Agent': ' miHoYoBBS/2.34.1',
+        'X-Requested-With': 'com.mihoyo.hyperion',
+        Referer: 'https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true&act_id=e202009291139501&utm_source=bbs&utm_medium=mys&utm_campaign=icon',
         DS: this.getDsSign()
       }
     }
@@ -203,7 +205,8 @@ export default class MysApi {
   /** 签到ds */
   getDsSign () {
     /** @Womsxd */
-    const n = 'ulInCDohgEs557j0VsPDYnQaaz6KJcv5'
+    // const n = 'ulInCDohgEs557j0VsPDYnQaaz6KJcv5' //2.28.1
+    const n = '9nQiU3AV0rJSIBWgdynfoGMGKaklfbM7'
     const t = Math.round(new Date().getTime() / 1000)
     const r = lodash.sampleSize('abcdefghijklmnopqrstuvwxyz0123456789', 6).join('')
     const DS = md5(`salt=${n}&t=${t}&r=${r}`)

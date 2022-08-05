@@ -82,7 +82,7 @@ export default class MysSign extends base {
 
     return {
       retcode: -1000,
-      msg: '签到失败：' + this.signMsg
+      msg: `uid:${ck.uid}，签到失败：${this.signMsg}`
     }
   }
 
