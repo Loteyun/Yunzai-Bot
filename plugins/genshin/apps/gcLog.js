@@ -64,7 +64,7 @@ export class gcLog extends plugin {
   }
 
   accept () {
-    if (this.e.file) {
+    if (this.e.file && this.e.isPrivate) {
       let name = this.e.file?.name
       if (name.includes('txt')) {
         this.e.msg = '#txt日志文件导入记录'

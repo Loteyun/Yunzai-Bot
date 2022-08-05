@@ -191,11 +191,11 @@ export default class RoleIndex extends base {
     if (resAbyss?.total_battle_times <= 0) {
       return abyss
     }
-    if (resAbyss.reveal_rank.length <= 0) {
+    if (resAbyss?.reveal_rank.length <= 0) {
       return abyss
     }
     // 打了三层才放出来
-    if (resAbyss.floors.length <= 2) {
+    if (resAbyss?.floors.length <= 2) {
       return abyss
     }
 
