@@ -23,8 +23,7 @@ export class update extends plugin {
         },
         {
           reg: '^#(强制)*更新(.*)',
-          fnc: 'update',
-          permission: 'master'
+          fnc: 'update'
         },
         {
           reg: '^#全部更新$',
@@ -38,6 +37,7 @@ export class update extends plugin {
   }
 
   async update () {
+    if (!this.e.isMaster) return false
     if (uping) {
       await this.reply('已有命令更新中..请勿重复操作')
       return
