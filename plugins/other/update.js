@@ -210,7 +210,14 @@ export class update extends plugin {
       cm = `cd ./plugins/${plugin}/ && git log -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"`
     }
 
-    let logAll = await execSync(cm, { encoding: 'utf-8' })
+    let logAll
+    try {
+      logAll = await execSync(cm, { encoding: 'utf-8' })
+    } catch (error) {
+      logger.error(error.toString())
+      this.reply(error.toString())
+    }
+
     if (!logAll) return false
 
     logAll = logAll.split('\n')
