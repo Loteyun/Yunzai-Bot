@@ -6,6 +6,7 @@ import MysInfo from './mys/mysInfo.js'
 import gsCfg from './gsCfg.js'
 import User from './user.js'
 import common from '../../../lib/common/common.js'
+import cfg from '../../../lib/config/config.js'
 
 export default class MysSign extends base {
   constructor (e) {
@@ -162,21 +163,32 @@ export default class MysSign extends base {
     let finishTime = moment().add(uids.length * 10.2, 's').format('MM-DD HH:mm:ss')
     logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(uids.length)} ${finishTime} 完成`)
 
+    let conuntMsg = `签到ck：${uids.length}个\n预计需要：${this.countTime(uids.length)}\n完成时间：${finishTime}`
+
     if (manual) {
       await this.e.reply('开始签到任务，完成前请勿重复执行')
-      await this.e.reply(`签到ck：${uids.length}个\n预计需要：${this.countTime(uids.length)}\n完成时间：${finishTime}`)
+      await this.e.reply(conuntMsg)
+    } else {
+      await common.relpyPrivate(cfg.masterQQ, '开始每天原神签到定时任务\n完成前请勿重复执行')
+      await common.relpyPrivate(cfg.masterQQ, conuntMsg)
     }
 
+    let sucNum = 0
     for (let uid of uids) {
       let ck = cks[uid]
       this.e.user_id = ck.qq
 
-      await this.doSign(ck, false)
+      let ret = await this.doSign(ck, false)
+      if (ret.retcode === 0) sucNum++
       if (this.signApi) await common.sleep(10000)
     }
 
+    let msg = `签到任务完成，成功ck：${sucNum}个`
+
     if (manual) {
-      this.e.reply('签到任务完成')
+      this.e.reply(msg)
+    } else {
+      common.relpyPrivate(cfg.masterQQ, msg)
     }
   }
 

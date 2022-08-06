@@ -70,7 +70,7 @@ export default class User extends base {
     await this.e.reply(uidMsg.join('\n'))
 
     let msg = '命令说明：\n【#体力】查询当前树脂'
-    msg += '\n【#签到】原神米游社签到'
+    msg += '\n【#签到】米游社原神自动签到'
     msg += '\n【#原石】查看原石札记'
     msg += '\n【#原石统计】原石统计数据'
     msg += '\n【#练度统计】技能统计列表'
