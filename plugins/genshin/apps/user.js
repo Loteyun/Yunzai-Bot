@@ -16,11 +16,11 @@ export class user extends plugin {
           fnc: 'ckHelp'
         },
         {
-          reg: '^(ck|cookie)代码',
+          reg: '^(ck|cookie|js)代码$',
           fnc: 'ckCode'
         },
         {
-          reg: '^#绑定(cookie|ck)',
+          reg: '^#绑定(cookie|ck)$',
           fnc: 'bingCk'
         },
         {
@@ -43,7 +43,7 @@ export class user extends plugin {
         //   fnc: 'resetCk'
         // }
         {
-          reg: '^#绑定(uid|UID)?[1|2|5][0-9]{8}',
+          reg: '^#绑定(uid|UID)?[1-9][0-9]{8}$',
           fnc: 'bingUid'
         },
         {

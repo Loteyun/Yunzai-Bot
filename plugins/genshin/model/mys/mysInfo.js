@@ -193,14 +193,16 @@ export default class MysInfo {
    *
    * @param e.apiSync 多个请求时是否同步请求
    * @param e.noTips  是否回复提示，用于第一次调用才提示，后续不再提示
+   *
+   * @param option.log 是否显示请求日志
    */
-  static async get (e, api, data = {}) {
+  static async get (e, api, data = {}, option = {}) {
     let mysInfo = await MysInfo.init(e, api)
 
     if (!mysInfo.uid || !mysInfo.ckInfo.ck) return false
     e.uid = mysInfo.uid
 
-    let mysApi = new MysApi(mysInfo.uid, mysInfo.ckInfo.ck)
+    let mysApi = new MysApi(mysInfo.uid, mysInfo.ckInfo.ck, option = {})
 
     let res
     if (lodash.isObject(api)) {
@@ -513,7 +515,7 @@ export default class MysInfo {
         break
       case 10102:
         if (res.message == 'Data is not public for the user') {
-          this.e.reply(`\nUID:${this.ckInfo.uid}，米游社数据未公开`, false, { at: this.userId })
+          this.e.reply(`\nUID:${this.uid}，米游社数据未公开`, false, { at: this.userId })
         } else {
           this.e.reply(`uid:${this.uid}，请先去米游社绑定角色`)
         }

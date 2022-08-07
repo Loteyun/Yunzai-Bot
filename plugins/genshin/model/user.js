@@ -287,7 +287,7 @@ export default class User extends base {
     let list = JSON.parse(fs.readFileSync(json, 'utf8'))
     let arr = {}
 
-    logger.mark('加载用户ck...')
+    logger.mark(logger.green('加载用户ck...'))
 
     lodash.forEach(list, (ck, qq) => {
       if (ck.qq) qq = ck.qq
@@ -323,7 +323,7 @@ export default class User extends base {
       gsCfg.saveBingCk(qq, ck)
     })
 
-    logger.mark(`加载用户ck完成：${lodash.size(arr)}个`)
+    logger.mark(logger.green(`加载用户ck完成：${lodash.size(arr)}个`))
 
     fs.unlinkSync(json)
   }
