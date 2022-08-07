@@ -11,6 +11,11 @@ export default class Today extends base {
   }
 
   async getData () {
+    if (moment().day() == 0) {
+      this.e.reply('今天周日，全部素材都可以刷哦~')
+      return false
+    }
+
     let res = await MysInfo.get(this.e, 'character')
     if (!res || res.retcode !== 0) return false
 
@@ -28,11 +33,6 @@ export default class Today extends base {
     // 4点后再展示第二日
     if (moment().hour() < 4) {
       week--
-    }
-
-    if (week == 0 || week == 7) {
-      this.e.reply('今天周日，全部素材都可以刷哦~')
-      return true
     }
 
     // 今天素材

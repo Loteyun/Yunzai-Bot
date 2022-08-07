@@ -643,7 +643,7 @@ export class add extends plugin {
       }
     ]
 
-    let msgArr = lodash.chunk(msg, 20)
+    let msgArr = lodash.chunk(msg, 40)
     msgArr.forEach(v => {
       v[v.length - 1] = lodash.trim(v[v.length - 1], '\n')
       forwardMsg.push({ ...userInfo, message: v })
