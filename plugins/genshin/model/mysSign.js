@@ -27,10 +27,16 @@ export default class MysSign extends base {
 
     let uids = lodash.map(ck, 'uid')
 
+    if (uids.length >= 1) {
+      await e.reply('多账号签到中...')
+    }
+
     let msg = []
-    for (let uid of uids) {
+
+    for (let i in uids) {
+      if (i >= 1) await common.sleep(2000)
+      let uid = uids[i]
       let res = await mysSign.doSign(ck[uid])
-      await common.sleep(100)
       if (res) msg.push(res.msg)
     }
 
