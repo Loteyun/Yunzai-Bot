@@ -7,69 +7,130 @@ import lodash from 'lodash'
 import fs from 'node:fs'
 import fetch from 'node-fetch'
 
+let set = './plugins/genshin/config/mys.set.yaml'
+if (!fs.existsSync(set)) {
+  fs.copyFileSync('./plugins/genshin/defSet/mys/set.yaml', set)
+}
+
+/**
+ * Modify By: ifeng0188
+ * 1.增加多个来源的攻略图
+ * 2.优化获取攻略图逻辑，更改为对比图片大小来寻找
+ * 3.增加攻略说明、设置默认攻略功能
+ */
+
 export class strategy extends plugin {
-  constructor () {
+  constructor() {
     super({
       name: '米游社攻略',
-      dsc: '米游社攻略图：西风攻略',
+      dsc: '米游社攻略图',
       event: 'message',
       priority: 500,
       rule: [
         {
-          reg: '^#*(.*)攻略$',
+          reg: '^#?(更新)?\\S+攻略([1-4])?$',
           fnc: 'strategy'
+        },
+        {
+          reg: "^#?攻略(说明|帮助)?$",
+          fnc: 'strategy_help'
+        },
+        {
+          reg: "^#?设置默认攻略([1-4])?$",
+          fnc: 'strategy_setting'
         }
       ]
     })
 
-    this.path = './data/strategy_xf'
+    this.set = gsCfg.getConfig('mys', 'set')
+
+    this.path = './data/strategy'
+
     this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
-    this.collection_id = [839176, 839179, 839181]
+    this.collection_id = [
+      [],
+      // 来源：西风驿站
+      [839176, 839179, 839181],
+      // 来源：原神观测枢
+      [813033],
+      // 来源：派蒙喵喵屋
+      [341284],
+      // 来源：OH是姜姜呀(需特殊处理)
+      [341523]
+    ]
 
     this.oss = '?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg'
   }
 
   /** 初始化创建配置文件 */
-  async init () {
+  async init() {
     if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path)
     }
+    /** 初始化子目录 */
+    for (let subId of [1, 2, 3, 4]) {
+      let path = this.path + '/' + subId
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path)
+      }
+    }
   }
 
-  /** #刻晴攻略 */
-  async strategy () {
-    let isUpdate = !!this.e.msg.includes('更新')
+  /** #心海攻略 */
+  async strategy() {
+    let match = /^#?(更新)?(\S+)攻略([1-4])?$/.exec(this.e.msg)
 
-    let role = gsCfg.getRole(this.e.msg, '攻略|更新')
+    // let isUpdate = !!this.e.msg.includes('更新')
+    let isUpdate = match[1] ? true : false
+    let roleName = match[2]
+    let group = match[3] ? match[3] : this.set.defaultSource
+
+    let role = gsCfg.getRole(roleName)
 
     if (!role) return false
 
     /** 主角特殊处理 */
     if (['10000005', '10000007', '20000000'].includes(String(role.roleId))) {
       if (!['风主', '岩主', '雷主', '草主'].includes(role.alias)) {
-        await this.e.reply('请选择：风主攻略、岩主攻略、雷主攻略')
+        await this.e.reply(`请选择：风主攻略${group}、岩主攻略${group}、雷主攻略${group}`)
         return
       } else {
         role.name = role.alias
       }
     }
 
-    this.sfPath = `${this.path}/${role.name}.jpg`
+    this.sfPath = `${this.path}/${group}/${role.name}.jpg`
 
     if (fs.existsSync(this.sfPath) && !isUpdate) {
       await this.e.reply(segment.image(`file://${this.sfPath}`))
       return
     }
 
-    if (await this.getImg(role.name)) {
+    if (await this.getImg(role.name, group)) {
       await this.e.reply(segment.image(`file://${this.sfPath}`))
     }
   }
 
+  /** #攻略帮助 */
+  async strategy_help() {
+    await this.e.reply("攻略帮助:\n#心海攻略[1234]\n#更新早柚攻略[1234]\n#设置默认攻略[1234]\n示例: 心海攻略4\n\n攻略来源:\n1——西风驿站\n2——原神观测枢\n3——派蒙喵喵屋\n4——OH是姜姜呀")
+  }
+
+  /** #设置默认攻略1 */
+  async strategy_setting() {
+    let match = /^#?设置默认攻略([1-4])?$/.exec(this.e.msg)
+
+    let config = fs.readFileSync(set, 'utf8')
+    config = config.replace(/defaultSource: [1-4]/g, 'defaultSource: ' + Number(match[1]))
+    fs.writeFileSync(set, config, 'utf8')
+
+    await this.e.reply("默认攻略已设置为: " + match[1])
+  }
+
   /** 下载攻略图 */
-  async getImg (name) {
+  async getImg(name, group) {
     let msyRes = []
-    this.collection_id.forEach((id) => msyRes.push(this.getData(this.url + id)))
+    this.collection_id[group].forEach((id) => msyRes.push(this.getData(this.url + id)))
 
     try {
       msyRes = await Promise.all(msyRes)
@@ -82,9 +143,29 @@ export class strategy extends plugin {
     let posts = lodash.flatten(lodash.map(msyRes, (item) => item.data.posts))
     let url
     for (let val of posts) {
-      if (val.post.subject.includes(name)) {
-        url = val.post.cover
-        break
+      /** 攻略图个别来源特殊处理 */
+      if (group == 4) {
+        if (val.post.structured_content.includes(name + '】')) {
+          let content = val.post.structured_content.replace(/\\\/\{\}/g, "")
+          let pattern = new RegExp(name + '】.*?image":"(.*?)"')
+          let img_id = pattern.exec(content)[1]
+          for (let image of val.image_list) {
+            if (image.image_id == img_id) {
+              url = image.url
+              break
+            }
+          }
+          break
+        }
+      } else {
+        if (val.post.subject.includes(name)) {
+          let max = 0
+          val.image_list.forEach((v, i) => {
+            if (Number(v.size) >= Number(val.image_list[max].size)) max = i
+          })
+          url = val.image_list[max].url
+          break
+        }
       }
     }
 
@@ -105,7 +186,7 @@ export class strategy extends plugin {
   }
 
   /** 获取数据 */
-  async getData (url) {
+  async getData(url) {
     let response = await fetch(url, { method: 'get' })
     if (!response.ok) {
       return false
