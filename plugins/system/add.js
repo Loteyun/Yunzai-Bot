@@ -235,6 +235,10 @@ export class add extends plugin {
           return
         }
       }
+      if (message[i].type == 'file') {
+        this.e.reply('添加错误：禁止添加文件')
+        return
+      }
     }
 
     if (message.length == 1 && message[0].type == 'image') {
