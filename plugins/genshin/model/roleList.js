@@ -32,6 +32,7 @@ export default class RoleList extends base {
 
     let skill = []
     if (this.ck) {
+      await this.e.reply('正在获取角色信息，请稍候...')
       this.mysApi = new MysApi(uid, this.ck.ck, { log: false })
       this.mysApi.cacheCd = 1800
       skill = await this.getAllSkill(avatars)
@@ -158,8 +159,10 @@ export default class RoleList extends base {
       avatar.cons = curr.actived_constellation_num
       if (avatar.id == 10000007) {
         avatar.name = '荧'
+        avatar.fetter = 10
       } else if (avatar.id == 10000005) {
         avatar.name = '空'
+        avatar.fetter = 10
       } else {
         let talent = charTalentMap[avatar.name] || {}
         avatar.talent = talent.name

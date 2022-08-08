@@ -142,7 +142,7 @@ export default class MysApi {
     try {
       response = await fetch(url, param)
     } catch (error) {
-      logger.error(error)
+      logger.error(error.toString())
       return false
     }
 
