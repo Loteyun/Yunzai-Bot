@@ -27,7 +27,7 @@ export default class MysSign extends base {
 
     let uids = lodash.map(ck, 'uid')
 
-    if (uids.length >= 1) {
+    if (uids.length > 1) {
       await e.reply('多账号签到中...')
     }
 
