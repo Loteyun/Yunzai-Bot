@@ -125,18 +125,18 @@ export class update extends plugin {
       return false
     }
 
-    let commitId = await this.getcommitId(plugin)
+    let time = await this.getTime(plugin)
 
     if (ret.stdout.includes('Already up')) {
-      await this.reply(`${this.typeName}已经是最新\n版本：${commitId}`)
+      await this.reply(`${this.typeName}已经是最新\n最后更新时间：${time}`)
     } else {
-      await this.reply(`${this.typeName}\n更新成功：${commitId}`)
+      await this.reply(`${this.typeName}\n最后更新时间：${time}`)
       this.isUp = true
       let log = await this.getLog(plugin)
       await this.reply(log)
     }
 
-    logger.mark(`${this.e.logFnc} 更新成功：${commitId}`)
+    logger.mark(`${this.e.logFnc} 最后更新时间：${time}`)
 
     return true
   }
@@ -151,6 +151,18 @@ export class update extends plugin {
     commitId = lodash.trim(commitId)
 
     return commitId
+  }
+
+  async getTime (plugin = '') {
+    let cm = 'git log  -1 --oneline --pretty=format:"%cd" --date=format:"%m-%d %H:%M"'
+    if (plugin) {
+      cm = `cd ./plugins/${plugin}/ && git log -1 --oneline --pretty=format:"%cd" --date=format:"%m-%d %H:%M"`
+    }
+
+    let time = await execSync(cm, { encoding: 'utf-8' })
+    time = lodash.trim(time)
+
+    return time
   }
 
   async gitErr (err, stdout) {
@@ -171,12 +183,12 @@ export class update extends plugin {
     }
 
     if (errMsg.includes('be overwritten by merge')) {
-      await this.reply(msg + `，存在冲突：\n${errMsg}\n` + '请解决冲突后再更新，或者执行#强制更新，放弃本地修改')
+      await this.reply(msg + `存在冲突：\n${errMsg}\n` + '请解决冲突后再更新，或者执行#强制更新，放弃本地修改')
       return
     }
 
     if (stdout.includes('CONFLICT')) {
-      await this.reply([msg + '，存在冲突\n', errMsg, stdout, '\n请解决冲突后再更新，或者执行#强制更新，放弃本地修改'])
+      await this.reply([msg + '存在冲突\n', errMsg, stdout, '\n请解决冲突后再更新，或者执行#强制更新，放弃本地修改'])
       return
     }
 
