@@ -1,7 +1,7 @@
 import cfg from '../../lib/config/config.js'
 import moment from 'moment'
 
-export class other extends plugin {
+export class status extends plugin {
   constructor () {
     super({
       name: '其他功能',
@@ -115,12 +115,12 @@ export class other extends plugin {
       msg += `\n生成图片：${count.total.screenshot}次`
     }
 
-    if (count.month.msg > 100) {
+    if (count.month.msg > 200) {
       msg += '\n-------本周-------'
       msg += `\n发送消息：${count.week.msg}条`
       msg += `\n生成图片：${count.week.screenshot}次`
     }
-    if (moment().format('D') >= 7 && count.month.msg > 200) {
+    if (moment().format('D') >= 8 && count.month.msg > 400) {
       msg += '\n-------本月-------'
       msg += `\n发送消息：${count.month.msg}条`
       msg += `\n生成图片：${count.month.screenshot}次`
