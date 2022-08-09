@@ -676,7 +676,7 @@ export default class MysInfo {
   static async getBingCkUid () {
     await MysInfo.initCk()
 
-    return bingCkUid
+    return { ...bingCkUid }
   }
 
   /** 切换uid */

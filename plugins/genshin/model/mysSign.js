@@ -182,6 +182,7 @@ export default class MysSign extends base {
     let sucNum = 0
     for (let uid of uids) {
       let ck = cks[uid]
+      if (!ck || !ck.qq) continue
       this.e.user_id = ck.qq
 
       let ret = await this.doSign(ck, false)
