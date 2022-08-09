@@ -3,6 +3,7 @@ import { createRequire } from 'module'
 import lodash from 'lodash'
 import fs from 'node:fs'
 import { Restart } from './restart.js'
+import common from '../../lib/common/common.js'
 
 const require = createRequire(import.meta.url)
 const { exec, execSync } = require('child_process')
@@ -159,8 +160,14 @@ export class update extends plugin {
       cm = `cd ./plugins/${plugin}/ && git log -1 --oneline --pretty=format:"%cd" --date=format:"%m-%d %H:%M"`
     }
 
-    let time = await execSync(cm, { encoding: 'utf-8' })
-    time = lodash.trim(time)
+    let time = ''
+    try {
+      time = await execSync(cm, { encoding: 'utf-8' })
+      time = lodash.trim(time)
+    } catch (error) {
+      logger.error(error.toString())
+      time = '获取时间失败'
+    }
 
     return time
   }
@@ -203,6 +210,7 @@ export class update extends plugin {
     for (let plu of dirs) {
       plu = this.getPlugin(plu)
       if (plu === false) continue
+      await common.sleep(1500)
       await this.runUpdate(plu)
     }
 
