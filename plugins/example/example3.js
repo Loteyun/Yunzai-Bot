@@ -1,6 +1,5 @@
 import plugin from '../../lib/plugins/plugin.js'
-import cfg from '../../lib/config/config.js'
-
+import { segment } from 'oicq'
 export class newcomer extends plugin {
   constructor () {
     super({
@@ -19,7 +18,7 @@ export class newcomer extends plugin {
     /** 冷却cd 30s */
     let cd = 30
 
-    if (this.e.user_id == cfg.qq) return
+    if (this.e.user_id == Bot.uin) return
 
     /** cd */
     let key = `Yz:newcomers:${this.e.group_id}`
@@ -27,7 +26,11 @@ export class newcomer extends plugin {
     redis.set(key, '1', { EX: cd })
 
     /** 回复 */
-    await this.reply(msg)
+    await this.reply([
+      segment.at(this.e.user_id),
+      // segment.image(),
+      msg
+    ])
   }
 }
 
@@ -44,9 +47,15 @@ export class outNotice extends plugin {
   }
 
   async accept () {
-    let msg = this.e.member?.card ?? this.e.member?.nickname
-    if (msg) {
-      msg = `${msg}(${this.e.user_id}) ${this.tips}`
+    if (this.e.user_id == Bot.uin) return
+
+    let name, msg
+    if (this.e.member) {
+      name = this.e.member.card || this.e.member.nickname
+    }
+
+    if (name) {
+      msg = `${name}(${this.e.user_id}) ${this.tips}`
     } else {
       msg = `${this.e.user_id} ${this.tips}`
     }
