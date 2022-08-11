@@ -54,7 +54,7 @@ export class add extends plugin {
 
   async accept () {
     /** 处理消息 */
-    if (this.e.atBot && this.e?.msg.includes('添加') && !this.e?.msg.includes('#')) {
+    if (this.e.atBot && this.e.msg && this.e?.msg.includes('添加') && !this.e?.msg.includes('#')) {
       this.e.msg = '#' + this.e.msg
     }
   }
@@ -381,7 +381,8 @@ export class add extends plugin {
       msg = msg[num]
     } else {
       /** 随机获取一个 */
-      msg = lodash.sample(msg)
+      num = lodash.random(0, msg.length - 1)
+      msg = msg[num]
     }
 
     if (msg[0] && msg[0].local) {
@@ -403,9 +404,27 @@ export class add extends plugin {
     }
 
     logger.mark(`[发送表情]${this.e.logText} ${keyWord}`)
-    this.e.reply(msg)
+    let ret = await this.e.reply(msg)
+    if (!ret) {
+      this.expiredMsg(keyWord, num)
+    }
 
     return true
+  }
+
+  expiredMsg (keyWord, num) {
+    logger.mark(`[发送表情]${this.e.logText} ${keyWord} 表情已过期失效`)
+
+    let arr = textArr[this.group_id].get(keyWord)
+    arr.splice(num, 1)
+
+    if (arr.length <= 0) {
+      textArr[this.group_id].delete(keyWord)
+    } else {
+      textArr[this.group_id].set(keyWord, arr)
+    }
+
+    this.saveJson()
   }
 
   /** 初始化已添加内容 */
