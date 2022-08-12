@@ -18,7 +18,7 @@ export class quit extends plugin {
     /** 判断主人，主人邀请不退群 */
     let gl = await this.e.group.getMemberMap()
     for (let qq of cfg.masterQQ) {
-      if (gl.has(qq)) {
+      if (gl.has(Number(qq))) {
         logger.mark(`[主人拉群] ${this.e.group_id}`)
         return
       }
