@@ -428,7 +428,7 @@ export default class GachaData extends base {
 
     let name = this.pool.up5[this.user[this.type].type - 1]
 
-    name = gsCfg.shortName(name, true)
+    if (sortName) name = gsCfg.shortName(name, true)
 
     return name
   }
@@ -441,7 +441,12 @@ export default class GachaData extends base {
     this.res.forEach((v, i) => {
       if (v.star == 5) {
         nowFive++
-        info = `${v.name}「${v.num}抽」`
+        if (v.type == 'role') {
+          info = gsCfg.shortName(v.name)
+        } else {
+          info = gsCfg.shortName(v.name, true)
+        }
+        info += `「${v.num}抽」`
         if (v.isBigUP) info += '大保底'
         if (v.isBing) info += '定轨'
       }
