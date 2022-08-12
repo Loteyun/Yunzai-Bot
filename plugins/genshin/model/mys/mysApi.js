@@ -147,7 +147,7 @@ export default class MysApi {
     }
 
     if (!response.ok) {
-      logger.error(response)
+      logger.error(`[米游社接口][${type}][${this.uid}] ${response.status} ${response.statusText}`)
       return false
     }
     if (this.option.log) {

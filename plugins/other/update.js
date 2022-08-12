@@ -225,9 +225,9 @@ export class update extends plugin {
   }
 
   async getLog (plugin = '') {
-    let cm = 'git log  -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
+    let cm = 'git log  -20 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"'
     if (plugin) {
-      cm = `cd ./plugins/${plugin}/ && git log -30 --oneline --pretty=format:"%h||[%cd]  %s" --date=format:"%m-%d %H:%M"`
+      cm = `cd ./plugins/${plugin}/ && ${cm}`
     }
 
     let logAll
