@@ -135,6 +135,7 @@ export default class User extends base {
       ck: this.ck,
       ltuid: this.ltuid,
       login_ticket: this.login_ticket,
+      device_id: this.getGuid(),
       isMain: true
     }
 
@@ -145,6 +146,7 @@ export default class User extends base {
         qq: this.e.user_id,
         ck: this.ck,
         ltuid: this.ltuid,
+        device_id: this.getGuid(),
         isMain: false
       }
       new MysInfo(this.e).addBingCk(ck[v.uid])
@@ -313,7 +315,8 @@ export default class User extends base {
         qq,
         ck: ck.cookie,
         ltuid,
-        isMain
+        isMain,
+        device_id: this.getGuid()
       }
     })
 
@@ -340,5 +343,13 @@ export default class User extends base {
       await this.e.reply(`当前绑定cookie\nuid：${ck.uid}`)
       await this.e.reply(ck.ck)
     }
+  }
+
+  getGuid () {
+    function S4 () {
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+    }
+
+    return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
   }
 }

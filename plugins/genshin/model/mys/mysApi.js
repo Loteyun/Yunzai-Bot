@@ -176,9 +176,10 @@ export default class MysApi {
       return {
         'x-rpc-app_version': '2.34.1',
         'x-rpc-client_type': 5,
-        'x-rpc-device_id': this.getGuid(),
+        'x-rpc-device_id': this.option.device_id || this.getGuid(),
         'User-Agent': ' miHoYoBBS/2.34.1',
         'X-Requested-With': 'com.mihoyo.hyperion',
+        'x-rpc-platform': 'android',
         Referer: 'https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true&act_id=e202009291139501&utm_source=bbs&utm_medium=mys&utm_campaign=icon',
         DS: this.getDsSign()
       }
