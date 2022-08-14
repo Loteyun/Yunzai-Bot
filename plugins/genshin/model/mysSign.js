@@ -8,6 +8,7 @@ import User from './user.js'
 import common from '../../../lib/common/common.js'
 import cfg from '../../../lib/config/config.js'
 
+let signing = false
 export default class MysSign extends base {
   constructor (e) {
     super(e)
@@ -26,6 +27,11 @@ export default class MysSign extends base {
       return false
     }
 
+    if (signing) {
+      e.reply('原神自动签到进行中，暂不能手动签到...')
+      return false
+    }
+
     let uids = lodash.map(ck, 'uid')
 
     if (uids.length > 1) {
@@ -35,6 +41,7 @@ export default class MysSign extends base {
     let msg = []
 
     for (let i in uids) {
+      this.ckNum = Number(i) + 1
       if (i >= 1) await common.sleep(5000)
       let uid = uids[i]
       let res = await mysSign.doSign(ck[uid])
@@ -162,7 +169,12 @@ export default class MysSign extends base {
     let sign = await this.mysApi.getData('bbs_sign')
     this.signMsg = sign?.message ?? 'Too Many Requests'
 
-    if (sign?.data?.risk_code == 375) {
+    if (!sign) {
+      logger.error(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
+      return false
+    }
+
+    if (sign.data && sign.data.success !== 0) {
       this.signMsg = '验证码失败'
       sign.message = '验证码失败'
     }
@@ -174,7 +186,7 @@ export default class MysSign extends base {
       return true
     }
 
-    if (sign.retcode === 0 && sign?.data?.risk_code === 0) {
+    if (sign.retcode === 0 && sign?.data.success === 0) {
       logger.mark(`[原神签到成功][qq:${this.e.user_id}][uid:${this.mysApi.uid}] 第${this.ckNum}个`)
       return true
     }
@@ -184,20 +196,26 @@ export default class MysSign extends base {
   }
 
   async signTask (manual) {
+    if (gsCfg.getConfig('mys', 'set').isAutoSign != 1) return
     this.isTask = true
 
     let cks = await MysInfo.getBingCkUid()
     let uids = lodash.map(cks, 'uid')
     if (uids.length <= 0) return
 
-    let signNum = await this.getsignNum(uids)
-    let time = signNum * 15 + signNum * 0.1 + uids.length * 0.02 + 10
+    signing = true
+
+    let { noSignNum, signNum } = await this.getsignNum(uids)
+    let time = noSignNum * 10 + noSignNum * 0.2 + uids.length * 0.02 + 10
 
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
 
     logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(time)} ${finishTime} 完成`)
 
-    let conuntMsg = `签到ck：${uids.length}个\n预计需要：${this.countTime(time)}\n完成时间：${finishTime}`
+    let signMsg = ''
+    if (signNum > 0) signMsg = `\n已签ck：${signNum}个`
+
+    let conuntMsg = `签到ck：${uids.length}个${signMsg}\n预计需要：${this.countTime(time)}\n完成时间：${finishTime}`
 
     if (manual) {
       await this.e.reply('开始原神签到任务，完成前请勿重复执行')
@@ -230,7 +248,7 @@ export default class MysSign extends base {
         failNum++
       }
       if (this.signApi) {
-        await common.sleep(lodash.random(10, 20) * 1000)
+        await common.sleep(lodash.random(8, 12) * 1000)
         this.signApi = false
       }
     }
@@ -242,6 +260,8 @@ export default class MysSign extends base {
     } else {
       common.relpyPrivate(cfg.masterQQ[0], msg)
     }
+
+    signing = false
   }
 
   async setCache (day) {
@@ -250,11 +270,13 @@ export default class MysSign extends base {
   }
 
   async getsignNum (uids) {
-    let sign = await redis.KEYS('Yz:genshin:sign:isSign*')
+    let signNum = (await redis.KEYS(`${this.prefix}isSign*`)).length
 
-    let signNum = uids.length - sign.length
+    let noSignNum = uids.length - signNum
 
-    return signNum > 0 ? signNum : 0
+    noSignNum = noSignNum > 0 ? noSignNum : 0
+
+    return { noSignNum, signNum }
   }
 
   countTime (time) {
