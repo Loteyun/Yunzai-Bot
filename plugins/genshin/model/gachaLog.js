@@ -416,8 +416,8 @@ export default class GachaLog extends base {
     if (lodash.isEmpty(this.all)) {
       this.all = this.readJson().list
     }
-    let fiveArr = []
-    let fourArr = []
+    let fiveLog = []
+    let fourLog = []
     let fiveNum = 0
     let fourNum = 0
     let fiveLogNum = 0
@@ -428,19 +428,20 @@ export default class GachaLog extends base {
     let weaponNum = 0
     let weaponFourNum = 0
     let allNum = this.all.length
-    let bigNum = 0// 大保底次数
+    let bigNum = 0
 
     for (let val of this.all) {
+      this.role = val
       if (val.rank_type == 4) {
         fourNum++
         if (noFourNum == 0) {
           noFourNum = fourLogNum
         }
         fourLogNum = 0
-        if (fourArr[val.name]) {
-          fourArr[val.name]++
+        if (fourLog[val.name]) {
+          fourLog[val.name]++
         } else {
-          fourArr[val.name] = 1
+          fourLog[val.name] = 1
         }
         if (val.item_type == '武器') {
           weaponFourNum++
@@ -450,60 +451,51 @@ export default class GachaLog extends base {
 
       if (val.rank_type == 5) {
         fiveNum++
-        if (fiveArr.length > 0) {
-          fiveArr[fiveArr.length - 1].num = fiveLogNum
+        if (fiveLog.length > 0) {
+          fiveLog[fiveLog.length - 1].num = fiveLogNum
         } else {
           noFiveNum = fiveLogNum
         }
         fiveLogNum = 0
-        fiveArr.push({
-          name: val.name,
-          abbrName: gsCfg.shortName(val.name),
-          item_type: val.item_type,
-          num: 0
-        })
-
+        let isUp = false
         // 歪了多少个
         if (val.item_type == '角色') {
-          if (['莫娜', '七七', '迪卢克', '琴'].includes(val.name)) {
+          if (this.checkIsUp()) {
+            isUp = true
+          } else {
             wai++
-          }
-          // 刻晴up过一次
-          if (val.name == '刻晴') {
-            let start = new Date('2021-02-17 18:00:00').getTime()
-            let end = new Date('2021-03-02 15:59:59').getTime()
-            let logTime = new Date(val.time).getTime()
-
-            if (logTime < start || logTime > end) {
-              wai++
-            }
           }
         } else {
           weaponNum++
         }
+
+        fiveLog.push({
+          name: val.name,
+          abbrName: gsCfg.shortName(val.name),
+          item_type: val.item_type,
+          num: 0,
+          isUp
+        })
       }
       fiveLogNum++
     }
-    if (fiveArr.length > 0) {
-      fiveArr[fiveArr.length - 1].num = fiveLogNum
+    if (fiveLog.length > 0) {
+      fiveLog[fiveLog.length - 1].num = fiveLogNum
 
       // 删除未知五星
-      for (let i in fiveArr) {
-        if (fiveArr[i].name == '未知') {
-          allNum = allNum - fiveArr[i].num
-          fiveArr.splice(i, 1)
+      for (let i in fiveLog) {
+        if (fiveLog[i].name == '未知') {
+          allNum = allNum - fiveLog[i].num
+          fiveLog.splice(i, 1)
           fiveNum--
         } else {
           // 上一个五星是不是常驻
           let lastKey = Number(i) + 1
-          if (fiveArr[lastKey] && ['莫娜', '七七', '迪卢克', '琴', '刻晴'].includes(fiveArr[lastKey].name)) {
-            fiveArr[i].minimum = true
+          if (fiveLog[lastKey] && !fiveLog[lastKey].isUp) {
+            fiveLog[i].minimum = true
             bigNum++
           } else {
-            fiveArr[i].minimum = false
-          }
-          if (!['莫娜', '七七', '迪卢克', '琴', '刻晴'].includes(fiveArr[i].name)) {
-            fiveArr[i].isUP = true
+            fiveLog[i].minimum = false
           }
         }
       }
@@ -514,15 +506,13 @@ export default class GachaLog extends base {
 
     // 四星最多
     let four = []
-    for (let i in fourArr) {
+    for (let i in fourLog) {
       four.push({
         name: i,
-        num: fourArr[i]
+        num: fourLog[i]
       })
     }
-    four = four.sort(function (a, b) {
-      return b.num - a.num
-    })
+    four = four.sort((a, b) => { return b.num - a.num })
 
     if (four.length <= 0) {
       four.push({ name: '无', num: 0 })
@@ -540,8 +530,8 @@ export default class GachaLog extends base {
     let isvalidNum = 0
 
     if (fiveNum > 0 && fiveNum > wai) {
-      if (fiveArr.length > 0 && ['莫娜', '七七', '迪卢克', '琴', '刻晴'].includes(fiveArr[0].name)) {
-        isvalidNum = (allNum - noFiveNum - fiveArr[0].num) / (fiveNum - wai)
+      if (fiveLog.length > 0 && !fiveLog[0].isUp) {
+        isvalidNum = (allNum - noFiveNum - fiveLog[0].num) / (fiveNum - wai)
       } else {
         isvalidNum = (allNum - noFiveNum) / (fiveNum - wai)
       }
@@ -565,22 +555,6 @@ export default class GachaLog extends base {
     let firstTime = this.all[this.all.length - 1].time.substring(0, 16)
     let lastTime = this.all[0].time.substring(0, 16)
 
-    let fiveColor = ''
-    switch (true) {
-      case fiveAvg <= 40:
-        fiveColor = 'red'
-        break
-      case fiveAvg <= 50:
-        fiveColor = 'orange'
-        break
-      case fiveAvg <= 60:
-        fiveColor = 'purple'
-        break
-      case fiveAvg <= 70:
-        fiveColor = 'blue'
-        break
-    }
-
     return {
       allNum,
       noFiveNum,
@@ -596,11 +570,42 @@ export default class GachaLog extends base {
       weaponFourNum,
       firstTime,
       lastTime,
-      fiveArr,
-      fiveColor,
+      fiveLog,
       upYs,
       noWaiRate
     }
+  }
+
+  checkIsUp () {
+    if (['莫娜', '七七', '迪卢克', '琴'].includes(this.role.name)) {
+      return false
+    }
+
+    if (this.role.name == '刻晴') {
+      let start = new Date('2021-02-17 18:00:00').getTime()
+      let end = new Date('2021-03-02 15:59:59').getTime()
+      let logTime = new Date(this.role.time).getTime()
+
+      if (logTime < start || logTime > end) {
+        return false
+      } else {
+        return true
+      }
+    }
+
+    if (this.role.name == '提纳里') {
+      let start = new Date('2022-08-24 06:00:00').getTime()
+      let end = new Date('2022-09-13 15:59:59').getTime()
+      let logTime = new Date(this.role.time).getTime()
+
+      if (logTime < start || logTime > end) {
+        return false
+      } else {
+        return true
+      }
+    }
+
+    return true
   }
 
   /** 渲染数据 */
@@ -649,8 +654,8 @@ export default class GachaLog extends base {
     }
 
     let hasMore = false
-    if (this.e.isGroup && data.fiveArr.length > 48) {
-      data.fiveArr = data.fiveArr.slice(0, 48)
+    if (this.e.isGroup && data.fiveLog.length > 48) {
+      data.fiveLog = data.fiveLog.slice(0, 48)
       hasMore = true
     }
 
@@ -663,7 +668,7 @@ export default class GachaLog extends base {
       allNum: data.allNum,
       firstTime: data.firstTime,
       lastTime: data.lastTime,
-      fiveArr: data.fiveArr,
+      fiveLog: data.fiveLog,
       line,
       hasMore
     }
