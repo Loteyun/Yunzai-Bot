@@ -196,7 +196,13 @@ export default class MysSign extends base {
   }
 
   async signTask (manual) {
-    if (gsCfg.getConfig('mys', 'set').isAutoSign != 1) return
+    if (gsCfg.getConfig('mys', 'set').isAutoSign != 1 && !manual) return
+
+    if (signing && manual) {
+      await this.e.reply('原神签到任务进行中，完成前请勿重复执行')
+      return false
+    }
+
     this.isTask = true
 
     let cks = await MysInfo.getBingCkUid()
@@ -205,27 +211,28 @@ export default class MysSign extends base {
 
     signing = true
 
-    let { noSignNum, signNum } = await this.getsignNum(uids)
-    let time = noSignNum * 10 + noSignNum * 0.2 + uids.length * 0.02 + 10
+    let tips = ['开始原神签到任务']
 
+    let { noSignNum } = await this.getsignNum(uids)
+    let time = noSignNum * 10 + noSignNum * 0.2 + uids.length * 0.02 + 5
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
+
+    tips.push(`\n签到ck：${uids.length}个`)
+    tips.push(`\n未签ck：${noSignNum}个`)
+
+    if (time > 120) {
+      tips.push(`\n预计需要：${this.countTime(time)}`)
+      tips.push(`\n完成时间：${finishTime}`)
+    }
 
     logger.mark(`签到ck:${uids.length}个，预计需要${this.countTime(time)} ${finishTime} 完成`)
 
-    let signMsg = ''
-    if (signNum > 0) signMsg = `\n已签ck：${signNum}个`
-
-    let conuntMsg = `签到ck：${uids.length}个${signMsg}\n预计需要：${this.countTime(time)}\n完成时间：${finishTime}`
-
     if (manual) {
-      await this.e.reply('开始原神签到任务，完成前请勿重复执行')
-      await this.e.reply(conuntMsg)
+      await this.e.reply(tips)
     } else {
-      await common.relpyPrivate(cfg.masterQQ[0], '开始每天原神签到定时任务\n完成前请勿重复执行')
-      await common.relpyPrivate(cfg.masterQQ[0], conuntMsg)
+      await common.relpyPrivate(cfg.masterQQ[0], tips)
+      await common.sleep(lodash.random(1, 20) * 1000)
     }
-
-    await common.sleep(lodash.random(1, 20) * 1000)
 
     let sucNum = 0
     let finshNum = 0
@@ -253,7 +260,7 @@ export default class MysSign extends base {
       }
     }
 
-    let msg = `原神签到任务完成：${uids.length}个\n成功：${sucNum}个\n已签：${finshNum}个\n失败：${failNum}个`
+    let msg = `原神签到任务完成：${uids.length}个\n已签：${finshNum}个\n成功：${sucNum}个\n失败：${failNum}个`
 
     if (manual) {
       this.e.reply(msg)
