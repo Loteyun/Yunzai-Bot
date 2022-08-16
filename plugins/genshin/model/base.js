@@ -22,6 +22,7 @@ export default class base {
 
     return {
       saveId: this.userId,
+      cwd: this._path,
       tplFile: `./plugins/genshin/resources/html/${this.model}/${this.model}.html`,
       /** 绝对路径 */
       pluResPath: `${this._path}/plugins/genshin/resources/`,

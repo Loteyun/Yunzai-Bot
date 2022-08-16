@@ -4,6 +4,7 @@ import gsCfg from './gsCfg.js'
 import lodash from 'lodash'
 import fetch from 'node-fetch'
 import fs from 'node:fs'
+import common from '../../../lib/common/common.js'
 
 export default class User extends base {
   constructor (e) {
@@ -69,7 +70,7 @@ export default class User extends base {
     }
     await this.e.reply(uidMsg.join('\n'))
 
-    let msg = '命令说明：\n【#体力】查询当前树脂'
+    let msg = '【#体力】查询当前树脂'
     msg += '\n【#签到】米游社原神自动签到'
     msg += '\n【#原石】查看原石札记'
     msg += '\n【#原石统计】原石统计数据'
@@ -78,6 +79,9 @@ export default class User extends base {
     msg += '\n【#我的ck】查看当前绑定ck'
     msg += '\n【#删除ck】删除当前绑定ck'
     msg += '\n【备注】支持绑定多个ck'
+
+    msg = await common.makeForwardMsg(this.e, ['使用命令说明', msg], '绑定成功：使用命令说明')
+
     await this.e.reply(msg)
   }
 

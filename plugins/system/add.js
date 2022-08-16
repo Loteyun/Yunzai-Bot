@@ -186,7 +186,7 @@ export class add extends plugin {
     this.keyWord = this.e.toString()
       .trim()
       /** 过滤#添加 */
-      .replace(/#|＃|图片|表情|添加/g, '')
+      .replace(/#|＃|图片|表情|添加|删除/g, '')
       /** 过滤@ */
       .replace(new RegExp('{at:' + Bot.uin + '}', 'g'), '')
       .trim()
@@ -461,7 +461,7 @@ export class add extends plugin {
       for (let val of files) {
         let tmp = val.split('.')
         tmp[0] = tmp[0].replace(/_[0-9]{10}$/, '')
-        if (/at|img/g.test(val)) continue
+        if (/at|image/g.test(val)) continue
 
         if (textArr[this.group_id].has(tmp[0])) continue
 
