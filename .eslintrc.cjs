@@ -3,9 +3,7 @@ module.exports = {
     es2021: true,
     node: true
   },
-  extends: [
-    'standard'
-  ],
+  extends: ['standard', 'prettier'],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module'
@@ -16,8 +14,13 @@ module.exports = {
     logger: true,
     plugin: true
   },
+  plugins: ['prettier'],
   rules: {
     eqeqeq: ['off'],
-    'prefer-const': ['off']
+    'prefer-const': ['off'],
+    'prettier/prettier': 'error',
+    'arrow-body-style': 'off',
+    'prefer-arrow-callback': 'off',
+    'space-before-function-paren': 'off'
   }
 }
