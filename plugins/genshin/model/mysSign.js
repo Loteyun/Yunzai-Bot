@@ -41,7 +41,7 @@ export default class MysSign extends base {
     let msg = []
 
     for (let i in uids) {
-      this.ckNum = Number(i) + 1
+      mysSign.ckNum = Number(i) + 1
       if (i >= 1) await common.sleep(5000)
       let uid = uids[i]
       let res = await mysSign.doSign(ck[uid])
@@ -170,7 +170,7 @@ export default class MysSign extends base {
     this.signMsg = sign?.message ?? 'Too Many Requests'
 
     if (!sign) {
-      logger.error(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
+      logger.mark(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
       return false
     }
 
@@ -191,7 +191,7 @@ export default class MysSign extends base {
       return true
     }
 
-    logger.error(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
+    logger.mark(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
     return false
   }
 
@@ -214,7 +214,7 @@ export default class MysSign extends base {
     let tips = ['开始原神签到任务']
 
     let { noSignNum } = await this.getsignNum(uids)
-    let time = noSignNum * 10 + noSignNum * 0.2 + uids.length * 0.02 + 5
+    let time = noSignNum * 6 + noSignNum * 0.2 + uids.length * 0.02 + 5
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
 
     tips.push(`\n签到ck：${uids.length}个`)
@@ -255,7 +255,7 @@ export default class MysSign extends base {
         failNum++
       }
       if (this.signApi) {
-        await common.sleep(lodash.random(8, 12) * 1000)
+        await common.sleep(lodash.random(4, 8) * 1000)
         this.signApi = false
       }
     }
