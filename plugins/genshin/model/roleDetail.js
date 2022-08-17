@@ -16,6 +16,7 @@ export default class RoleDetail extends base {
   }
 
   static async get (e) {
+    if (e.msg.includes('角色详情')) return false
     let roleDetail = new RoleDetail(e)
     return await roleDetail.getDetail()
   }

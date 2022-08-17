@@ -74,6 +74,11 @@ export default class MysInfo {
       return false
     }
 
+    if (!['1', '2', '5'].includes(String(mysInfo.uid)[0])) {
+      // e.reply('只支持查询国服uid')
+      return false
+    }
+
     mysInfo.e.uid = mysInfo.uid
 
     /** 获取ck */

@@ -6,7 +6,7 @@ import gsCfg from '../model/gsCfg.js'
 export class calculator extends plugin {
   constructor () {
     super({
-      name: '刻晴养成',
+      name: '养成计算',
       dsc: '角色养成材料计算器',
       event: 'message',
       priority: 700,

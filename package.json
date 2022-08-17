@@ -9,7 +9,6 @@
     "test": "node ./lib/tools/test.js",
     "login": "node app.js login",
     "dev": "node app.js dev",
-    "format": "prettier --write  \"**/*.{js,json,md}\"",
     "start": "pm2 start ./config/pm2/pm2.json",
     "stop": "pm2 stop ./config/pm2/pm2.json",
     "restart": "pm2 restart ./config/pm2/pm2.json",
@@ -38,10 +37,8 @@
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.3",
-    "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-promise": "^6.0.0",
     "express": "^4.18.1",
-    "express-art-template": "^1.0.1",
-    "prettier": "^2.3.2"
+    "express-art-template": "^1.0.1"
   }
 }

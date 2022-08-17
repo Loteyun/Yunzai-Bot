@@ -214,7 +214,7 @@ export default class MysSign extends base {
     let tips = ['开始原神签到任务']
 
     let { noSignNum } = await this.getsignNum(uids)
-    let time = noSignNum * 6 + noSignNum * 0.2 + uids.length * 0.02 + 5
+    let time = noSignNum * 7.5 + noSignNum * 0.2 + uids.length * 0.02 + 5
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
 
     tips.push(`\n签到ck：${uids.length}个`)
@@ -255,7 +255,7 @@ export default class MysSign extends base {
         failNum++
       }
       if (this.signApi) {
-        await common.sleep(lodash.random(4, 8) * 1000)
+        await common.sleep(lodash.random(5, 8) * 1000)
         this.signApi = false
       }
     }

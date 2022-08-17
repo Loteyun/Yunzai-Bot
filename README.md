@@ -6,7 +6,7 @@
 [目前功能](https://github.com/Le-niao/Yunzai-Bot/tree/main/plugins/genshin)
 
 ## 使用方法
->环境准备： Windows or Linux，Node.js（[版本至少v16以上](http://nodejs.cn/download/)），[Redis](resources/readme/命令说明.md#window安装redis)
+>环境准备： Windows or Linux，Node.js（[版本至少v16以上](http://nodejs.cn/download/)），[Redis](https://redis.io/docs/getting-started/installation/)
 
 1.克隆项目
 ```
@@ -27,3 +27,15 @@ pnpm install -P
 ```
 node app
 ```
+
+## 致谢
+| Nickname                                                     | Contribution                        |
+| :----------------------------------------------------------: | ----------------------------------- |
+|[GardenHamster](https://github.com/GardenHamster/GenshinPray) | 模拟抽卡背景素材来源 |
+|[西风驿站](https://bbs.mihoyo.com/ys/collection/839181) | 角色攻略图来源 |
+|[米游社友人A](https://bbs.mihoyo.com/ys/collection/428421) | 角色突破素材图来源 |
+
+## 其他
+- 最后给个star或者[爱发电](https://afdian.net/@Le-niao)，你的支持是维护本项目的动力~~
+- 图片素材来源于网络，仅供交流学习使用
+- 严禁用于任何商业用途和非法行为
