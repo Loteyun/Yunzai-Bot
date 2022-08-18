@@ -14,6 +14,7 @@ export default class MysSign extends base {
     super(e)
     this.model = 'sign'
     this.isTask = false
+    this.force = false
   }
 
   static async sign (e) {
@@ -58,7 +59,7 @@ export default class MysSign extends base {
     this.key = `${this.prefix}isSign:${this.mysApi.uid}`
 
     let isSigned = await redis.get(this.key)
-    if (isSigned && this.isTask) {
+    if (isSigned && this.isTask && !this.force) {
       let reward = await this.getReward(isSigned)
       return {
         retcode: 0,
@@ -91,7 +92,7 @@ export default class MysSign extends base {
 
     this.signInfo = signInfo.data
 
-    if (this.signInfo.is_sign) {
+    if (this.signInfo.is_sign && !this.force) {
       // logger.mark(`[原神已签到][qq:${this.e.user_id}][uid:${this.mysApi.uid}]`)
       let reward = await this.getReward(this.signInfo.total_sign_day)
       this.setCache(this.signInfo.total_sign_day)
@@ -153,7 +154,7 @@ export default class MysSign extends base {
       }
     }
     if (reward && reward.length > 0) {
-      reward = reward[signDay] || ''
+      reward = reward[signDay - 1] || ''
       if (reward.name && reward.cnt) {
         reward = `${reward.name}*${reward.cnt}`
       }
@@ -191,7 +192,7 @@ export default class MysSign extends base {
       return true
     }
 
-    logger.mark(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
+    logger.mark(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message} 第${this.ckNum}个`)
     return false
   }
 
@@ -229,6 +230,7 @@ export default class MysSign extends base {
 
     if (manual) {
       await this.e.reply(tips)
+      if (this.e.msg.includes('force')) this.force = true
     } else {
       await common.relpyPrivate(cfg.masterQQ[0], tips)
       await common.sleep(lodash.random(1, 20) * 1000)

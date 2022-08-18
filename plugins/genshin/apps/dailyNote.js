@@ -27,7 +27,7 @@ export class dailyNote extends plugin {
           fnc: 'sign'
         },
         {
-          reg: '^#(全部签到|签到任务)$',
+          reg: '^#(全部签到|签到任务)(force)*$',
           permission: 'master',
           fnc: 'signTask'
         }
