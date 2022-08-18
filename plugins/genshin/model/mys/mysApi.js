@@ -22,7 +22,7 @@ export default class MysApi {
       ...option
     }
 
-    this.UserAgent = `Mozilla/5.0 (Linux; Android 12; Unspecified Device) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.73 Mobile Safari/537.36 miHoYoBBS/2.34.1`
+    this.UserAgent = `Mozilla/5.0 (Linux; Android 12; ${this.device}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.73 Mobile Safari/537.36 miHoYoBBS/2.34.1`
   }
 
   getUrl (type, data = {}) {
@@ -229,5 +229,10 @@ export default class MysApi {
   async cache (res, cacheKey) {
     if (!res || res.retcode !== 0) return
     redis.setEx(cacheKey, this.cacheCd, JSON.stringify(res))
+  }
+
+  /* eslint-disable quotes */
+  get device () {
+    return `Mi 10`
   }
 }

@@ -72,7 +72,7 @@ export default class MysNews extends base {
     if (num > 1) {
       await page.setViewport({
         width: boundingBox.width,
-        height: pageHeight
+        height: pageHeight + 100
       })
     }
 
@@ -236,4 +236,100 @@ export default class MysNews extends base {
 
     return emp
   }
+
+  async mysSearch () {
+    let msg = this.e.msg
+    msg = msg.replace(/#|米游社|mys/g, '')
+
+    if (!msg) {
+      await this.e.reply('请输入关键字，如#米游社七七')
+      return true
+    }
+
+    let page = msg.match(/.*(\d){1}$/) || 0
+    if (page && page[1]) {
+      page = page[1]
+    }
+
+    msg = lodash.trim(msg, page)
+
+    let res = await this.postData('searchPosts', { gids: 2, size: 20, keyword: msg })
+    if (res?.data?.posts.length <= 0) {
+      await this.e.reply('搜索不到您要的结果，换个关键词试试呗~')
+      return true
+    }
+
+    let postId = res.data.posts[page].post.post_id
+
+    const param = await this.newsDetail(postId)
+
+    const img = await this.rander(param)
+
+    if (img.length == 1) {
+      return img[0]
+    } else {
+      img.unshift(param.data.post.subject)
+      return common.makeForwardMsg(this.e, img, `${param.data.post.subject}`)
+    }
+  }
+
+  async mysUrl () {
+    let msg = this.e.msg
+    let postId = /[0-9]+/g.exec(msg)[0]
+
+    if (!postId) return false
+
+    const param = await this.newsDetail(postId)
+
+    const img = await this.rander(param)
+
+    if (img.length == 1) {
+      return img[0]
+    } else {
+      img.unshift(param.data.post.subject)
+      return common.makeForwardMsg(this.e, img, `${param.data.post.subject}`)
+    }
+  }
+
+  async ysEstimate () {
+    let msg = '版本原石盘点'
+    let res = await this.postData('searchPosts', { gids: 2, size: 20, keyword: msg })
+    if (res?.data?.posts.length <= 0) {
+      await this.e.reply('暂无数据')
+      return false
+    }
+    let postId = ''
+    for (let post of res.data.posts) {
+      if (post.user.uid == '218945821') {
+        postId = post.post.post_id
+        break
+      }
+    }
+
+    if (!postId) {
+      await this.e.reply('暂无数据')
+      return false
+    }
+
+    const param = await this.newsDetail(postId)
+
+    const img = await this.rander(param)
+
+    if (img.length == 1) {
+      return img[0]
+    } else {
+      img.unshift(param.data.post.subject)
+      img.push(segment.image(param.data.post.images[0] + '?x-oss-process=image//resize,s_600/quality,q_80/auto-orient,0/interlace,1/format,jpg'))
+      return common.makeForwardMsg(this.e, img, `${param.data.post.subject}`)
+    }
+  }
+
+  // async mysNewsTask () {
+  //   // 推送2小时内的公告资讯
+  //   let interval = 7200
+  //   // 最多同时推送两条
+  //   let maxNum = 1
+  //   // 包含关键字不推送
+  //   let reg = /冒险助力礼包|纪行|预下载|脚本外挂|集中反馈|已开奖|云·原神/g
+  // }
 }
