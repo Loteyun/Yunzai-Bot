@@ -332,8 +332,8 @@ export default class MysNews extends base {
     if (img.length == 1) {
       return img[0]
     } else {
-      img.unshift(titile)
-      return await common.makeForwardMsg(this.e, img, titile)
+      let msg = [titile, ...img]
+      return await common.makeForwardMsg(this.e, msg, titile)
     }
   }
 
