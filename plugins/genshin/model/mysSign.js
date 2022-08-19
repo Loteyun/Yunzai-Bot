@@ -75,7 +75,7 @@ export default class MysSign extends base {
     if (!signInfo) return false
 
     if (signInfo.retcode == -100) {
-      logger.error(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}] 绑定cookie已失效`)
+      logger.error(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 绑定cookie已失效`)
       await new User(this.e).del(ck.uid)
       return {
         retcode: -100,
@@ -93,7 +93,7 @@ export default class MysSign extends base {
     this.signInfo = signInfo.data
 
     if (this.signInfo.is_sign && !this.force) {
-      // logger.mark(`[原神已签到][qq:${this.e.user_id}][uid:${this.mysApi.uid}]`)
+      // logger.mark(`[原神已签到][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id,11,' ')}]`)
       let reward = await this.getReward(this.signInfo.total_sign_day)
       this.setCache(this.signInfo.total_sign_day)
       return {
@@ -171,7 +171,7 @@ export default class MysSign extends base {
     this.signMsg = sign?.message ?? 'Too Many Requests'
 
     if (!sign) {
-      logger.mark(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message}`)
+      logger.mark(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}]：${sign.message}`)
       return false
     }
 
@@ -183,16 +183,16 @@ export default class MysSign extends base {
     /** 签到成功 */
     if (sign.retcode === -5003) {
       this.signed = true
-      logger.mark(`[原神已签到][qq:${this.e.user_id}][uid:${this.mysApi.uid}] 第${this.ckNum}个`)
+      logger.mark(`[原神已签到][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 第${this.ckNum}个`)
       return true
     }
 
     if (sign.retcode === 0 && sign?.data.success === 0) {
-      logger.mark(`[原神签到成功][qq:${this.e.user_id}][uid:${this.mysApi.uid}] 第${this.ckNum}个`)
+      logger.mark(`[原神签到成功][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 第${this.ckNum}个`)
       return true
     }
 
-    logger.mark(`[原神签到失败][qq:${this.e.user_id}][uid:${this.mysApi.uid}]：${sign.message} 第${this.ckNum}个`)
+    logger.mark(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}]：${sign.message} 第${this.ckNum}个`)
     return false
   }
 
@@ -220,9 +220,9 @@ export default class MysSign extends base {
 
     tips.push(`\n签到ck：${uids.length}个`)
     tips.push(`\n未签ck：${noSignNum}个`)
+    tips.push(`\n预计需要：${this.countTime(time)}`)
 
     if (time > 120) {
-      tips.push(`\n预计需要：${this.countTime(time)}`)
       tips.push(`\n完成时间：${finishTime}`)
     }
 
