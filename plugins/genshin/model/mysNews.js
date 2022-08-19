@@ -4,6 +4,7 @@ import lodash from 'lodash'
 import puppeteer from '../../../lib/puppeteer/puppeteer.js'
 import common from '../../../lib/common/common.js'
 import { segment } from 'oicq'
+import gsCfg from '../model/gsCfg.js'
 
 const _path = process.cwd()
 let emoticon
@@ -45,12 +46,7 @@ export default class MysNews extends base {
 
     const img = await this.rander(param)
 
-    if (img.length == 1) {
-      return img[0]
-    } else {
-      img.unshift(param.data.post.subject)
-      return common.makeForwardMsg(this.e, img, `原神${typeName}：${param.data.post.subject}`)
-    }
+    return await this.replyMsg(img, `原神${typeName}：${param.data.post.subject}`)
   }
 
   async rander (param) {
@@ -58,57 +54,76 @@ export default class MysNews extends base {
 
     await puppeteer.browserInit()
 
+    if (!puppeteer.browser) return false
+
     const savePath = puppeteer.dealTpl('mysNews', param)
     if (!savePath) return false
 
     const page = await puppeteer.browser.newPage()
+    try {
+      await page.goto(`file://${_path}${lodash.trim(savePath, '.')}`, { timeout: 120000 })
+      const body = await page.$('#container') || await page.$('body')
+      const boundingBox = await body.boundingBox()
 
-    await page.goto(`file://${_path}${lodash.trim(savePath, '.')}`)
-    const body = await page.$('#container') || await page.$('body')
-    const boundingBox = await body.boundingBox()
+      const num = Math.round(boundingBox.height / pageHeight) || 1
 
-    const num = Math.round(boundingBox.height / pageHeight) || 1
-
-    if (num > 1) {
-      await page.setViewport({
-        width: boundingBox.width,
-        height: pageHeight + 100
-      })
-    }
-
-    const img = []
-    for (let i = 1; i <= num; i++) {
-      const randData = {
-        type: 'jpeg',
-        quality: 90
+      if (num > 1) {
+        await page.setViewport({
+          width: boundingBox.width,
+          height: pageHeight + 100
+        })
       }
 
-      let buff
-      if (num == 1) {
-        buff = await body.screenshot(randData)
-      } else {
-        buff = await page.screenshot(randData)
+      const img = []
+      for (let i = 1; i <= num; i++) {
+        const randData = {
+          type: 'jpeg',
+          quality: 90
+        }
+
+        if (i != 1 && i == num) {
+          await page.setViewport({
+            width: boundingBox.width,
+            height: parseInt(boundingBox.height) - pageHeight * (num - 1)
+          })
+        }
+
+        if (i != 1 && i <= num) {
+          await page.evaluate(() => window.scrollBy(0, 3000))
+        }
+
+        let buff
+        if (num == 1) {
+          buff = await body.screenshot(randData)
+        } else {
+          buff = await page.screenshot(randData)
+        }
+
+        if (num > 2) await common.sleep(200)
+
+        puppeteer.renderNum++
+        /** 计算图片大小 */
+        const kb = (buff.length / 1024).toFixed(2) + 'kb'
+
+        logger.mark(`[图片生成][${this.model}][${puppeteer.renderNum}次] ${kb}`)
+
+        img.push(segment.image(buff))
       }
 
-      puppeteer.renderNum++
-      /** 计算图片大小 */
-      const kb = (buff.length / 1024).toFixed(2) + 'kb'
+      await page.close().catch((err) => logger.error(err))
 
-      logger.mark(`[图片生成][${this.model}][${puppeteer.renderNum}次] ${kb}`)
-
-      img.push(segment.image(buff))
-
-      if (i < num) {
-        await page.evaluate(() => window.scrollBy(0, 3000))
+      if (num > 1) {
+        logger.mark(`[图片生成][${this.model}] 处理完成`)
       }
+      return img
+    } catch (error) {
+      logger.error(`图片生成失败:${this.model}:${error}`)
+      /** 关闭浏览器 */
+      if (puppeteer.browser) {
+        await puppeteer.browser.close().catch((err) => logger.error(err))
+      }
+      puppeteer.browser = false
     }
-
-    page.close().catch((err) => logger.error(err))
-
-    if (num > 1) {
-      logger.mark(`[图片生成][${this.model}] 处理完成`)
-    }
-    return img
   }
 
   async newsDetail (postId) {
@@ -243,7 +258,7 @@ export default class MysNews extends base {
 
     if (!msg) {
       await this.e.reply('请输入关键字，如#米游社七七')
-      return true
+      return false
     }
 
     let page = msg.match(/.*(\d){1}$/) || 0
@@ -256,7 +271,7 @@ export default class MysNews extends base {
     let res = await this.postData('searchPosts', { gids: 2, size: 20, keyword: msg })
     if (res?.data?.posts.length <= 0) {
       await this.e.reply('搜索不到您要的结果，换个关键词试试呗~')
-      return true
+      return false
     }
 
     let postId = res.data.posts[page].post.post_id
@@ -265,12 +280,7 @@ export default class MysNews extends base {
 
     const img = await this.rander(param)
 
-    if (img.length == 1) {
-      return img[0]
-    } else {
-      img.unshift(param.data.post.subject)
-      return common.makeForwardMsg(this.e, img, `${param.data.post.subject}`)
-    }
+    return await this.replyMsg(img, `${param.data.post.subject}`)
   }
 
   async mysUrl () {
@@ -283,12 +293,7 @@ export default class MysNews extends base {
 
     const img = await this.rander(param)
 
-    if (img.length == 1) {
-      return img[0]
-    } else {
-      img.unshift(param.data.post.subject)
-      return common.makeForwardMsg(this.e, img, `${param.data.post.subject}`)
-    }
+    return await this.replyMsg(img, `${param.data.post.subject}`)
   }
 
   async ysEstimate () {
@@ -315,21 +320,88 @@ export default class MysNews extends base {
 
     const img = await this.rander(param)
 
+    if (img.length > 1) {
+      img.push(segment.image(param.data.post.images[0] + '?x-oss-process=image//resize,s_600/quality,q_80/auto-orient,0/interlace,1/format,jpg'))
+    }
+
+    return await this.replyMsg(img, `${param.data.post.subject}`)
+  }
+
+  async replyMsg (img, titile) {
+    if (!img || img.length <= 0) return false
     if (img.length == 1) {
       return img[0]
     } else {
-      img.unshift(param.data.post.subject)
-      img.push(segment.image(param.data.post.images[0] + '?x-oss-process=image//resize,s_600/quality,q_80/auto-orient,0/interlace,1/format,jpg'))
-      return common.makeForwardMsg(this.e, img, `${param.data.post.subject}`)
+      img.unshift(titile)
+      return await common.makeForwardMsg(this.e, img, titile)
     }
   }
 
-  // async mysNewsTask () {
-  //   // 推送2小时内的公告资讯
-  //   let interval = 7200
-  //   // 最多同时推送两条
-  //   let maxNum = 1
-  //   // 包含关键字不推送
-  //   let reg = /冒险助力礼包|纪行|预下载|脚本外挂|集中反馈|已开奖|云·原神/g
-  // }
+  async mysNewsTask (type = 1) {
+    let typeName = '公告'
+    let mode = 'announceGroup'
+    if (type == 3) {
+      typeName = '资讯'
+      mode = 'infoGroup'
+    }
+    // 推送2小时内的公告资讯
+    let interval = 7200
+    // 最多同时推送两条
+    let maxNum = 1
+    // 包含关键字不推送
+    let reg = /冒险助力礼包|纪行|预下载|脚本外挂|集中反馈|已开奖|云·原神/g
+
+    let news = await this.postData('getNewsList', { gids: 2, page_size: 10, type })
+
+    let key = 'Yz:genshin:mys:newPush:'
+
+    let now = Date.now() / 1000
+    let pushNews = []
+    for (let item of news.data.list) {
+      if (new RegExp(reg).test(item.post.subject)) {
+        continue
+      }
+
+      let pushed = await redis.get(key + item.post.post_id)
+      // this.e.force = true
+      if ((now - item.post.created_at <= interval && !pushed) || this.e.force) {
+        pushNews.push(item)
+        redis.set(key + item.post.post_id, '1', { EX: 3600 * 10 })
+        if (pushNews.length >= maxNum) {
+          break
+        }
+      }
+    }
+
+    if (pushNews.length <= 0) return
+
+    let pushData = []
+    for (let val of pushNews) {
+      const param = await this.newsDetail(val.post.post_id)
+
+      const img = await this.rander(param)
+
+      pushData.push({
+        title: param.data.post.subject,
+        img
+      })
+    }
+
+    let cfg = gsCfg.getConfig('mys', 'pushNews')
+    this.e.isGroup = true
+    // 获取需要推送公告的用户
+    for (let groupId of cfg[mode]) {
+      logger.mark(`推送公告：${groupId}`)
+      this.e.group_id = groupId
+      for (let msg of pushData) {
+        this.e.group = Bot.pickGroup(Number(groupId))
+        let tmp = await this.replyMsg(msg.img, `原神${typeName}推送：${msg.title}`)
+        if (tmp?.type != 'xml') {
+          tmp = [`原神${typeName}推送\n`, tmp]
+        }
+        await this.e.group.sendMsg(tmp)
+        await common.sleep(1000)
+      }
+    }
+  }
 }

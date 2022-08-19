@@ -26,12 +26,17 @@ export class Restart extends plugin {
 
   async init () {
     let restart = await redis.get(this.key)
-    if (restart) {
+    if (restart && process.argv[1].includes('pm2')) {
       restart = JSON.parse(restart)
+      let time = restart.time || new Date().getTime()
+      time = (new Date().getTime() - time) / 1000
+
+      let msg = `重启成功：耗时${time.toFixed(2)}秒`
+
       if (restart.isGroup) {
-        Bot.pickGroup(restart.id).sendMsg('重启成功')
+        Bot.pickGroup(restart.id).sendMsg(msg)
       } else {
-        Bot.pickUser(restart.id).sendMsg('重启成功')
+        Bot.pickUser(restart.id).sendMsg(msg)
       }
       redis.del(this.key)
     }
@@ -43,7 +48,8 @@ export class Restart extends plugin {
 
     let data = JSON.stringify({
       isGroup: !!this.e.isGroup,
-      id: this.e.isGroup ? this.e.group_id : this.e.user_id
+      id: this.e.isGroup ? this.e.group_id : this.e.user_id,
+      time: new Date().getTime()
     })
 
     try {
