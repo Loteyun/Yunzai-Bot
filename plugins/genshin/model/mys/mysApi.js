@@ -21,8 +21,6 @@ export default class MysApi {
       log: true,
       ...option
     }
-
-    this.UserAgent = `Mozilla/5.0 (Linux; Android 12; ${this.device}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.73 Mobile Safari/537.36 miHoYoBBS/2.34.1`
   }
 
   getUrl (type, data = {}) {
@@ -175,12 +173,16 @@ export default class MysApi {
   getHeaders (query = '', body = '', sign = false) {
     if (sign) {
       return {
-        'x-rpc-app_version': '2.34.1',
+        'x-rpc-app_version': '2.35.2',
         'x-rpc-client_type': 5,
         'x-rpc-device_id': this.option.device_id || this.getGuid(),
-        'User-Agent': this.UserAgent,
+        'User-Agent': `Mozilla/5.0 (Linux; Android 12; ${this.device}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.73 Mobile Safari/537.36 miHoYoBBS/2.35.2`,
         'X-Requested-With': 'com.mihoyo.hyperion',
         'x-rpc-platform': 'android',
+        'x-rpc-device_model': this.device,
+        'x-rpc-device_name': this.device,
+        'x-rpc-channel': 'miyousheluodi',
+        'x-rpc-sys_version': '6.0.1',
         Referer: 'https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true&act_id=e202009291139501&utm_source=bbs&utm_medium=mys&utm_campaign=icon',
         DS: this.getDsSign()
       }
@@ -207,7 +209,7 @@ export default class MysApi {
   /** 签到ds */
   getDsSign () {
     /** @Womsxd */
-    const n = '9nQiU3AV0rJSIBWgdynfoGMGKaklfbM7'
+    const n = 'N50pqm7FSy2AkFz2B3TqtuZMJ5TOl3Ep'
     const t = Math.round(new Date().getTime() / 1000)
     const r = lodash.sampleSize('abcdefghijklmnopqrstuvwxyz0123456789', 6).join('')
     const DS = md5(`salt=${n}&t=${t}&r=${r}`)

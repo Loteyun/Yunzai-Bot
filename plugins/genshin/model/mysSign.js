@@ -79,7 +79,8 @@ export default class MysSign extends base {
       await new User(this.e).del(ck.uid)
       return {
         retcode: -100,
-        msg: `签到失败，uid:${ck.uid}，绑定cookie已失效`
+        msg: `签到失败，uid:${ck.uid}，绑定cookie已失效`,
+        is_invalid: true
       }
     }
 
@@ -178,12 +179,13 @@ export default class MysSign extends base {
     if (sign.data && sign.data.success !== 0) {
       this.signMsg = '验证码失败'
       sign.message = '验证码失败'
+      sign = await this.retry(10)
     }
 
     /** 签到成功 */
     if (sign.retcode === -5003) {
       this.signed = true
-      logger.mark(`[原神已签到][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 第${this.ckNum}个`)
+      logger.mark(`[原神已经签到][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 第${this.ckNum}个`)
       return true
     }
 
@@ -215,7 +217,7 @@ export default class MysSign extends base {
     let tips = ['开始原神签到任务']
 
     let { noSignNum } = await this.getsignNum(uids)
-    let time = noSignNum * 7.5 + noSignNum * 0.2 + uids.length * 0.02 + 5
+    let time = noSignNum * (7.5 + 12) + noSignNum * 0.2 + uids.length * 0.02 + 5
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
 
     tips.push(`\n签到ck：${uids.length}个`)
@@ -239,6 +241,7 @@ export default class MysSign extends base {
     let sucNum = 0
     let finshNum = 0
     let failNum = 0
+    let invalidNum = 0
     for (let i in uids) {
       this.ckNum = Number(i) + 1
       let uid = uids[i]
@@ -254,7 +257,11 @@ export default class MysSign extends base {
           sucNum++
         }
       } else {
-        failNum++
+        if (ret.is_invalid) {
+          invalidNum++
+        } else {
+          sucNum++
+        }
       }
       if (this.signApi) {
         await common.sleep(lodash.random(5, 8) * 1000)
@@ -263,6 +270,9 @@ export default class MysSign extends base {
     }
 
     let msg = `原神签到任务完成：${uids.length}个\n已签：${finshNum}个\n成功：${sucNum}个\n失败：${failNum}个`
+    if (invalidNum > 0) {
+      msg += `失效：${msg}`
+    }
 
     if (manual) {
       this.e.reply(msg)
@@ -297,5 +307,24 @@ export default class MysSign extends base {
     if (min > 0) msg += `${min}分钟`
     if (sec > 0) msg += `${sec}秒`
     return msg
+  }
+
+  async retry (num = 3) {
+    let sign
+    for (let i = 1; i <= num; i++) {
+      await common.sleep(6000)
+      logger.mark(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 重试${i}次`)
+      sign = await this.mysApi.getData('bbs_sign')
+      if (sign && sign.retcode === -5003) break
+      if (sign && sign.retcode === 0 && sign?.data?.risk_code === 0) {
+        break
+      }
+      if (sign?.data?.risk_code == 375) {
+        sign.retcode = 375
+        sign.message = '签到失败risk_code:375'
+      }
+    }
+
+    return sign
   }
 }
