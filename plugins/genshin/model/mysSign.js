@@ -15,6 +15,8 @@ export default class MysSign extends base {
     this.model = 'sign'
     this.isTask = false
     this.force = false
+
+    this.cfg = gsCfg.getConfig('mys', 'set')
   }
 
   static async sign (e) {
@@ -172,14 +174,17 @@ export default class MysSign extends base {
     this.signMsg = sign?.message ?? 'Too Many Requests'
 
     if (!sign) {
-      logger.mark(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}]：${sign.message}`)
+      logger.mark(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}]：${sign.message || this.signMsg}`)
       return false
     }
 
     if (sign.data && sign.data.success !== 0) {
       this.signMsg = '验证码失败'
       sign.message = '验证码失败'
-      sign = await this.retry(10)
+
+      if (this.cfg.signRetry > 0) {
+        sign = await this.retry(this.cfg.signRetry)
+      }
     }
 
     /** 签到成功 */
@@ -199,7 +204,7 @@ export default class MysSign extends base {
   }
 
   async signTask (manual) {
-    if (gsCfg.getConfig('mys', 'set').isAutoSign != 1 && !manual) return
+    if (this.cfg.isAutoSign != 1 && !manual) return
 
     if (signing && manual) {
       await this.e.reply('原神签到任务进行中，完成前请勿重复执行')
@@ -217,7 +222,7 @@ export default class MysSign extends base {
     let tips = ['开始原神签到任务']
 
     let { noSignNum } = await this.getsignNum(uids)
-    let time = noSignNum * (7.5 + 12) + noSignNum * 0.2 + uids.length * 0.02 + 5
+    let time = noSignNum * (6.1 + 12) + noSignNum * 0.2 + uids.length * 0.02 + 5
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
 
     tips.push(`\n签到ck：${uids.length}个`)
@@ -242,6 +247,7 @@ export default class MysSign extends base {
     let finshNum = 0
     let failNum = 0
     let invalidNum = 0
+    this.retryTime = 0
     for (let i in uids) {
       this.ckNum = Number(i) + 1
       let uid = uids[i]
@@ -264,7 +270,7 @@ export default class MysSign extends base {
         }
       }
       if (this.signApi) {
-        await common.sleep(lodash.random(5, 8) * 1000)
+        await common.sleep(6.1 * 1000)
         this.signApi = false
       }
     }
@@ -273,7 +279,9 @@ export default class MysSign extends base {
     if (invalidNum > 0) {
       msg += `失效：${msg}`
     }
-
+    if (this.retryTime > 0) {
+      msg += `重试：${this.retryTime}次`
+    }
     if (manual) {
       this.e.reply(msg)
     } else {
@@ -313,6 +321,7 @@ export default class MysSign extends base {
     let sign
     for (let i = 1; i <= num; i++) {
       await common.sleep(6000)
+      this.retryTime++
       logger.mark(`[原神签到失败][uid:${this.mysApi.uid}][qq:${lodash.padEnd(this.e.user_id, 10, ' ')}] 重试${i}次`)
       sign = await this.mysApi.getData('bbs_sign')
       if (sign && sign.retcode === -5003) break
