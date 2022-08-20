@@ -367,7 +367,7 @@ export default class MysInfo {
 
   async getPublicCK () {
     if (lodash.isEmpty(pubCk)) {
-      logger.mark('请先配置公共查询ck')
+      logger.mark('请先#配置公共查询ck')
       return false
     }
 

@@ -222,7 +222,7 @@ export default class MysSign extends base {
     let tips = ['开始原神签到任务']
 
     let { noSignNum } = await this.getsignNum(uids)
-    let time = noSignNum * (6.1 + 12) + noSignNum * 0.2 + uids.length * 0.02 + 5
+    let time = noSignNum * 15 + noSignNum * 0.2 + uids.length * 0.02 + 5
     let finishTime = moment().add(time, 's').format('MM-DD HH:mm:ss')
 
     tips.push(`\n签到ck：${uids.length}个`)
@@ -280,7 +280,7 @@ export default class MysSign extends base {
       msg += `失效：${msg}`
     }
     if (this.retryTime > 0) {
-      msg += `重试：${this.retryTime}次`
+      msg += `\n重试：${this.retryTime}次`
     }
     if (manual) {
       this.e.reply(msg)

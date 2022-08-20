@@ -131,7 +131,7 @@ export class update extends plugin {
     if (ret.stdout.includes('Already up')) {
       await this.reply(`${this.typeName}已经是最新\n最后更新时间：${time}`)
     } else {
-      await this.reply(`${this.typeName}\n最后更新时间：${time}`)
+      await this.reply(`${this.typeName}更新成功\n更新时间：${time}`)
       this.isUp = true
       let log = await this.getLog(plugin)
       await this.reply(log)

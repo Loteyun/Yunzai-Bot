@@ -190,7 +190,7 @@ export default class MysApi {
     return {
       'x-rpc-app_version': '2.34.1',
       'x-rpc-client_type': 5,
-      'User-Agent': this.UserAgent,
+      'User-Agent': `Mozilla/5.0 (Linux; Android 12; ${this.device}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.73 Mobile Safari/537.36 miHoYoBBS/2.35.2`,
       DS: this.getDs(query, body)
     }
   }
