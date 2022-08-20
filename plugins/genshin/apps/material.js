@@ -22,7 +22,10 @@ export class material extends plugin {
     })
 
     this.path = './data/material_友人A'
-    this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id=428421'
+    this.pathOther = './data/material_other'
+    this.url = 'https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id='
+
+    this.collection_id = [428421, 1164644]
 
     this.special = ['雷电将军', '珊瑚宫心海', '菲谢尔', '托马', '八重神子', '九条裟罗', '辛焱', '神里绫华']
 
@@ -33,6 +36,9 @@ export class material extends plugin {
   async init () {
     if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path)
+    }
+    if (!fs.existsSync(this.pathOther)) {
+      fs.mkdirSync(this.pathOther)
     }
   }
 
@@ -57,13 +63,24 @@ export class material extends plugin {
     }
 
     if (await this.getImg(role.name)) {
+      return await this.e.reply(segment.image(`file://${this.imgPath}`))
+    }
+
+    this.imgPath = `${this.pathOther}/${role.name}.jpg`
+
+    if (fs.existsSync(this.imgPath) && !isUpdate) {
       await this.e.reply(segment.image(`file://${this.imgPath}`))
+      return
+    }
+
+    if (await this.getImgOther(role.name)) {
+      return await this.e.reply(segment.image(`file://${this.imgPath}`))
     }
   }
 
   /** 下载攻略图 */
   async getImg (name) {
-    let ret = await this.getData()
+    let ret = await this.getData(this.collection_id[0])
 
     if (!ret || ret.retcode !== 0) {
       await this.e.reply('暂无素材数据，请稍后再试')
@@ -83,7 +100,38 @@ export class material extends plugin {
     }
 
     if (!url) {
-      this.e.reply(`暂无${name}素材`)
+      return false
+    }
+
+    logger.mark(`${this.e.logFnc} 下载${name}素材图`)
+
+    if (!await common.downFile(url + this.oss, this.imgPath)) {
+      return false
+    }
+
+    logger.mark(`${this.e.logFnc} 下载${name}素材成功`)
+
+    return true
+  }
+
+  async getImgOther (name) {
+    let ret = await this.getData(this.collection_id[1])
+
+    if (!ret || ret.retcode !== 0) {
+      await this.e.reply('暂无素材数据，请稍后再试')
+      logger.error(`米游社接口报错：${ret.message || '未知错误'}}`)
+      return false
+    }
+
+    let url
+    for (let val of ret.data.posts) {
+      if (val.post.subject.includes(name)) {
+        url = val.image_list[0].url
+        break
+      }
+    }
+
+    if (!url) {
       return false
     }
 
@@ -99,8 +147,8 @@ export class material extends plugin {
   }
 
   /** 获取数据 */
-  async getData () {
-    let response = await fetch(this.url, { method: 'get' })
+  async getData (collectionId) {
+    let response = await fetch(this.url + collectionId, { method: 'get' })
     if (!response.ok) {
       return false
     }

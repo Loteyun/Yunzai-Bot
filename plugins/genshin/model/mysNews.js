@@ -344,6 +344,10 @@ export default class MysNews extends base {
       typeName = '资讯'
       mode = 'infoGroup'
     }
+
+    let cfg = gsCfg.getConfig('mys', 'pushNews')
+    if (cfg[mode].length <= 0) return
+
     // 推送2小时内的公告资讯
     let interval = 7200
     // 最多同时推送两条
@@ -379,6 +383,8 @@ export default class MysNews extends base {
     for (let val of pushNews) {
       const param = await this.newsDetail(val.post.post_id)
 
+      logger.mark(`[米游社${typeName}推送] ${param.data.post.subject}`)
+
       const img = await this.rander(param)
 
       pushData.push({
@@ -387,7 +393,6 @@ export default class MysNews extends base {
       })
     }
 
-    let cfg = gsCfg.getConfig('mys', 'pushNews')
     this.e.isGroup = true
     // 获取需要推送公告的用户
     for (let groupId of cfg[mode]) {
