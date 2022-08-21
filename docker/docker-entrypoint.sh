@@ -36,7 +36,7 @@ git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
 if [ -d $MIAO_PLUGIN_PATH"/.git" ]; then
     echo -e "\n ================ \n ${Info} ${GreenBG} 拉取 喵喵插件 更新 ${Font} \n ================ \n"
     cd $MIAO_PLUGIN_PATH
-
+    
     if [[ ! -z $(git status -s) ]]; then
         echo -e " ${Warn} ${YellowBG} 当前工作区有修改，尝试暂存后更新。${Font}"
         git add .
@@ -46,13 +46,13 @@ if [ -d $MIAO_PLUGIN_PATH"/.git" ]; then
     else
         git pull origin master --allow-unrelated-histories
     fi
-
+    
     echo -e "\n ================ \n ${Info} ${GreenBG} 更新 喵喵插件 运行依赖 ${Font} \n ================ \n"
-
+    
     pnpm add image-size -w
-
+    
     echo -e "\n ================ \n ${Version} ${BlueBG} 喵喵插件版本信息 ${Font} \n ================ \n"
-
+    
     git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
 fi
 
@@ -69,13 +69,13 @@ if [ -d $XIAOYAO_CVS_PATH"/.git" ]; then
     else
         git pull origin master --allow-unrelated-histories
     fi
-
+    
     echo -e "\n ================ \n ${Info} ${GreenBG} 更新 xiaoyao-cvs 插件运行依赖 ${Font} \n ================ \n"
-
+    
     pnpm add promise-retry superagent -w
-
+    
     echo -e "\n ================ \n ${Version} ${BlueBG} xiaoyao-cvs 插件版本信息 ${Font} \n ================ \n"
-
+    
     git log -1 --pretty=format:"%h - %an, %ar (%cd) : %s"
 fi
 
