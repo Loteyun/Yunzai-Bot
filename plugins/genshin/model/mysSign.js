@@ -277,7 +277,7 @@ export default class MysSign extends base {
 
     let msg = `原神签到任务完成：${uids.length}个\n已签：${finshNum}个\n成功：${sucNum}个\n失败：${failNum}个`
     if (invalidNum > 0) {
-      msg += `失效：${invalidNum}个`
+      msg += `\n失效：${invalidNum}个`
     }
     if (this.retryTime > 0) {
       msg += `\n重试：${this.retryTime}次`

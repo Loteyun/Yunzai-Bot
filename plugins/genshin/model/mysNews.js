@@ -28,6 +28,7 @@ export default class MysNews extends base {
     }
 
     const res = await this.postData('getNewsList', { gids: 2, page_size: 20, type })
+    if (!res) return
 
     const data = res.data.list
     if (data.length == 0) {
@@ -128,6 +129,8 @@ export default class MysNews extends base {
 
   async newsDetail (postId) {
     const res = await this.postData('getPostFull', { gids: 2, read: 1, post_id: postId })
+    if (!res) return
+
     const data = await this.detalData(res.data.post)
 
     return {
@@ -269,6 +272,8 @@ export default class MysNews extends base {
     msg = lodash.trim(msg, page)
 
     let res = await this.postData('searchPosts', { gids: 2, size: 20, keyword: msg })
+    if (!res) return
+
     if (res?.data?.posts.length <= 0) {
       await this.e.reply('搜索不到您要的结果，换个关键词试试呗~')
       return false
@@ -356,6 +361,7 @@ export default class MysNews extends base {
     let reg = /冒险助力礼包|纪行|预下载|脚本外挂|集中反馈|已开奖|云·原神/g
 
     let news = await this.postData('getNewsList', { gids: 2, page_size: 10, type })
+    if (!news) return
 
     let key = 'Yz:genshin:mys:newPush:'
 
