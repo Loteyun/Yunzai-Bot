@@ -51,7 +51,7 @@ export default class MysNews extends base {
   }
 
   async rander (param) {
-    const pageHeight = 10000
+    const pageHeight = 7000
 
     await puppeteer.browserInit()
 
@@ -358,7 +358,7 @@ export default class MysNews extends base {
     // 最多同时推送两条
     let maxNum = 1
     // 包含关键字不推送
-    let reg = /冒险助力礼包|纪行|预下载|脚本外挂|集中反馈|已开奖|云·原神/g
+    let reg = /冒险助力礼包|纪行|预下载|脚本外挂|集中反馈|已开奖|云·原神|魔神任务|传说任务说明/g
 
     let news = await this.postData('getNewsList', { gids: 2, page_size: 10, type })
     if (!news) return
@@ -367,6 +367,7 @@ export default class MysNews extends base {
 
     let now = Date.now() / 1000
     let pushNews = []
+    news.data.list = news.data.list.reverse()
     for (let item of news.data.list) {
       if (new RegExp(reg).test(item.post.subject)) {
         continue
