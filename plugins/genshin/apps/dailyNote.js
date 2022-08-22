@@ -30,6 +30,10 @@ export class dailyNote extends plugin {
           reg: '^#(全部签到|签到任务)(force)*$',
           permission: 'master',
           fnc: 'signTask'
+        },
+        {
+          reg: '^#*(开启|关闭|取消)(米游社|自动|原神)*签到$',
+          fnc: 'signClose'
         }
       ]
     })
@@ -63,5 +67,10 @@ export class dailyNote extends plugin {
   async signTask () {
     let mysSign = new MysSign(this.e)
     await mysSign.signTask(!!this?.e?.msg)
+  }
+
+  async signClose () {
+    let mysSign = new MysSign(this.e)
+    await mysSign.signClose()
   }
 }

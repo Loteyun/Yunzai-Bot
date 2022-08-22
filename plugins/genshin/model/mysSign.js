@@ -2,7 +2,6 @@ import moment from 'moment'
 import lodash from 'lodash'
 import base from './base.js'
 import MysApi from './mys/mysApi.js'
-import MysInfo from './mys/mysInfo.js'
 import gsCfg from './gsCfg.js'
 import User from './user.js'
 import common from '../../../lib/common/common.js'
@@ -213,9 +212,14 @@ export default class MysSign extends base {
 
     this.isTask = true
 
-    let cks = await MysInfo.getBingCkUid()
-    let uids = lodash.map(cks, 'uid')
-    if (uids.length <= 0) return
+    let cks = (await gsCfg.getBingCk()).ck
+    let uids = lodash.filter(cks, (o) => { return o.autoSign !== false })
+    uids = lodash.map(uids, 'uid')
+
+    if (uids.length <= 0) {
+      if (manual) await this.e.reply('暂无ck需要签到')
+      return
+    }
 
     signing = true
 
@@ -253,6 +257,8 @@ export default class MysSign extends base {
       let uid = uids[i]
       let ck = cks[uid]
       if (!ck || !ck.qq) continue
+      if (ck.autoSign === false) continue
+
       this.e.user_id = ck.qq
 
       let ret = await this.doSign(ck, false)
@@ -335,5 +341,41 @@ export default class MysSign extends base {
     }
 
     return sign
+  }
+
+  async signClose () {
+    let model = '开启'
+    if (/关闭|取消/.test(this.e.msg)) {
+      model = '关闭'
+    }
+
+    /** 获取个人ck */
+    let ck = gsCfg.getBingCkSingle(this.e.user_id)
+
+    if (lodash.isEmpty(ck)) {
+      await this.e.reply(`${model}签到失败，请先#绑定cookie\n发送【cookie帮助】查看配置教程`, false, { at: true })
+      return false
+    }
+
+    let autoCk = {}
+    for (let i in ck) {
+      if (!ck[i].isMain) continue
+      autoCk = ck[i]
+      if (model == '开启') {
+        ck[i].autoSign = true
+      } else {
+        ck[i].autoSign = false
+      }
+    }
+
+    if (lodash.isEmpty(autoCk)) return
+
+    gsCfg.saveBingCk(this.e.user_id, ck)
+
+    let msg = `uid:${autoCk.uid}，原神自动签到已${model}`
+    if (model == '开启') {
+      msg += '\n每天将为你自动签到~'
+    }
+    await this.e.reply(msg)
   }
 }
