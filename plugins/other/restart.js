@@ -15,6 +15,11 @@ export class Restart extends plugin {
           reg: '^#重启$',
           fnc: 'restart',
           permission: 'master'
+        },
+        {
+          reg: '^#(停机|关机)$',
+          fnc: 'stop',
+          permission: 'master'
         }
       ]
     })
@@ -55,7 +60,7 @@ export class Restart extends plugin {
     try {
       await redis.set(this.key, data, { EX: 120 })
 
-      let cm = 'npm run start'
+      let cm = 'npm start'
       if (process.argv[1].includes('pm2')) {
         cm = 'npm run restart'
       } else {
@@ -81,5 +86,23 @@ export class Restart extends plugin {
     }
 
     return true
+  }
+
+  async stop () {
+    if (!process.argv[1].includes('pm2')) {
+      logger.mark('关机成功，已停止运行')
+      await this.e.reply('关机成功，已停止运行')
+      process.exit()
+    }
+
+    logger.mark('关机成功，已停止运行')
+    await this.e.reply('关机成功，已停止运行')
+
+    exec('npm stop', { windowsHide: true }, (error, stdout, stderr) => {
+      if (error) {
+        this.e.reply(`操作失败！\n${error.stack}`)
+        logger.error(`关机失败\n${error.stack}`)
+      }
+    })
   }
 }
