@@ -90,7 +90,7 @@ export default class MysNews extends base {
         }
 
         if (i != 1 && i <= num) {
-          await page.evaluate(() => window.scrollBy(0, 10000))
+          await page.evaluate(() => window.scrollBy(0, 7000))
         }
 
         let buff
