@@ -595,7 +595,7 @@ export default class GachaLog extends base {
 
     if (this.role.name == '提纳里') {
       let start = new Date('2022-08-24 06:00:00').getTime()
-      let end = new Date('2022-09-13 15:59:59').getTime()
+      let end = new Date('2022-09-09 17:59:59').getTime()
       let logTime = new Date(this.role.time).getTime()
 
       if (logTime < start || logTime > end) {
